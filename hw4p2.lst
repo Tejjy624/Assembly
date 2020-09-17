@@ -1,0 +1,87 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @, $000
+  2.              	.equ stack, $100
+  3.  000 020100  	lds# stack
+  4.  001 030000  	ldf# 0
+  5.  002 080060  	psh# in	;starting address of string
+  6.  003 080019  	psh# length	;number of characters
+  7.  004 080069  	psh# out	;starting address of converted string
+  8.  005 412020  	jsr	title
+  9.  006 120003  	ads#	3
+ 10.  007 FFFFFF  	hlt
+ 11.              
+ 12.              	.equ @, $060
+ 13.  060 6C4541  in:	.char 'lEArN pYtHOn iN 30 YeaRS!', length
+      061 724E20
+      062 705974
+      063 484F6E
+      064 20694E
+      065 203330
+      066 205965
+      067 615253
+      068 212020
+ 14.              
+ 15.  069 FFFFFFFFFFFFFFFF  out:	.blkw length
+ 16.              	.equ @, $020
+ 17.              	.equ ini, 4
+ 18.              	.equ len, 3
+ 19.              	.equ new, 2
+ 20.  020 FFF012  title:	pshf
+ 21.  021 FFF008  	tsf
+ 22.  022 010000  	ldx# 0
+ 23.              
+ 24.  023 213003  loop:	cmx !len
+ 25.  024 4B2044  	jge  done
+ 26.  025 507004  	ldc* !ini
+ 27.              
+ 28.  026 200061  is_lower:	cma# 'a'
+ 29.  027 4A202B  	jlt  is_upper
+ 30.  028 20007A  	cma# 'z'
+ 31.  029 4D202B  	jgt	is_upper
+ 32.  02A 40202F  	jmp	new_word
+ 33.              
+ 34.  02B 200041  is_upper:	cma# 'A'
+ 35.  02C 4A203E  	jlt  not_alpha
+ 36.  02D 20005A  	cma# 'Z'
+ 37.  02E 4D203E  	jgt  not_alpha
+ 38.              
+ 39.  02F 002046  new_word:	lda	word
+ 40.  030 200001  	cma#	1
+ 41.  031 492039  	jne  not_new
+ 42.  032 000000  	lda# 0
+ 43.  033 042046  	sta	word
+ 44.  034 507004  	ldc* !ini
+ 45.              
+ 46.  035 20005A  	cma# 'Z'
+ 47.  036 4C2041  	jle  end_loop
+ 48.  037 140020  	sba# 'a'-'A'
+ 49.  038 402041  	jmp  end_loop
+ 50.              
+ 51.  039 507004  not_new:	ldc* !ini
+ 52.              
+ 53.  03A 200061  	cma# 'a'
+ 54.  03B 4B2041  	jge  end_loop
+ 55.  03C 100020  	ada# 'a'-'A'
+ 56.  03D 402041  	jmp  end_loop
+ 57.              
+ 58.  03E 000001  not_alpha:	lda#	1
+ 59.  03F 042046  	sta  word
+ 60.  040 507004  	ldc* !ini
+ 61.              
+ 62.  041 517002  end_loop:	stc* !new
+ 63.  042 110001  	adx# 1
+ 64.  043 402023  	jmp loop
+ 65.              
+ 66.  044 FFF015  done:	popf
+ 67.  045 FFF040  	rtn
+ 68.              
+ 69.  046 000001  word:	.word 1
+
+                     SYMBOL TABLE CONTENTS
+
+000044 = DONE            000041 = END_LOOP        000060 = IN              
+000004 = INI             000026 = IS_LOWER        00002B = IS_UPPER        
+000003 = LEN             000019 = LENGTH          000023 = LOOP            
+000002 = NEW             00002F = NEW_WORD        00003E = NOT_ALPHA       
+000039 = NOT_NEW         000069 = OUT             000100 = STACK           
+000020 = TITLE           000046 = WORD            

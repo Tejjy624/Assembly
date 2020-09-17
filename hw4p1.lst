@@ -1,0 +1,70 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @, $000
+  2.              	.equ stack, $100
+  3.  000 020100  	lds#	stack
+  4.  001 030000  	ldf#	0
+  5.  002 080008  	psh#	in	;starting address of string
+  6.  003 080021  	psh#	length	;number of characters
+  7.  004 080060  	psh#	$060	;starting address of converted string
+  8.  005 412020  	jsr	swapcase
+  9.  006 120003  	ads#	3
+ 10.  007 FFFFFF  	hlt
+ 11.              
+ 12.  008 485745  in:	.char 'HWERwerTRty34%%YB6UR%$D67EEEEEEEE', length
+      009 527765
+      00A 725452
+      00B 747933
+      00C 342525
+      00D 594236
+      00E 555225
+      00F 244436
+      010 374545
+      011 454545
+      012 454545
+ 13.              
+ 14.              	.equ	@, $060
+ 15.  060 FFFFFFFFFFFFFFFF  out:	.blkw length
+ 16.              
+ 17.              	.equ	@, $020	;swapcase
+ 18.              	.equ	ini, 4
+ 19.              	.equ	len, 3
+ 20.              	.equ new, 2
+ 21.              
+ 22.  020 FFF012  swapcase:	pshf
+ 23.  021 FFF008  	tsf
+ 24.  022 010000  	ldx# 0
+ 25.              
+ 26.  023 217003  loop:	cmx* !len
+ 27.  024 4B2039  	jge	end
+ 28.  025 507004  	ldc* !ini
+ 29.  026 200061  	cma#	'a'
+ 30.  027 4A202E  	jlt	upper
+ 31.  028 20007A  	cma#	'z'
+ 32.  029 4D2036  	jgt	nonchar
+ 33.  02A 140020  	sba#	'a'-'A'
+ 34.  02B 517002  	stc* !new
+ 35.  02C 110001  	adx# 1
+ 36.  02D 402023  	jmp	loop
+ 37.              
+ 38.  02E 200041  upper:	cma# 'A'
+ 39.  02F 4A2036  	jlt	nonchar
+ 40.  030 20005A  	cma# 'Z'
+ 41.  031 4D2036  	jgt	nonchar
+ 42.  032 100020  	ada# 'a'-'A'
+ 43.  033 517002  	stc* !new
+ 44.  034 110001  	adx#	1
+ 45.  035 402023  	jmp  loop
+ 46.              
+ 47.  036 517002  nonchar:	stc* !new
+ 48.  037 110001  	adx# 1
+ 49.  038 402023  	jmp  loop
+ 50.              
+ 51.  039 FFF015  end:	popf
+ 52.  03A FFF040  	rtn
+
+                     SYMBOL TABLE CONTENTS
+
+000039 = END             000008 = IN              000004 = INI             
+000003 = LEN             000021 = LENGTH          000023 = LOOP            
+000002 = NEW             000036 = NONCHAR         000060 = OUT             
+000100 = STACK           000020 = SWAPCASE        00002E = UPPER           

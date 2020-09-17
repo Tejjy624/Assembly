@@ -1,0 +1,27 @@
+	.equ crt_data, $317
+	.equ tim_ctrl, $030
+	.equ tim_stat, $030
+	.equ tim_val, $031
+	.equ bell, $07
+	.equ reset_ready_bit, $40
+	.equ start_after_load, $10
+	.equ put_str, $E05
+main:	lda  reload
+	outw tim_val
+	lda# reset_ready_bit + start_after_load ;this way the variables are still seperately usable
+	outb tim_ctrl
+
+loop:	inb  tim_stat
+	jge  loop
+
+	lda# reset_ready_bit
+	outb tim_ctrl
+	lda# bell
+	outb crt_data
+	psh# msg1_len
+	psh# msg1
+	jsr  put_str
+	ads# 2
+	jmp loop
+reload:	.word $002000
+msg1:	.char 'are you annoyed yet?\cr\lf', msg1_len

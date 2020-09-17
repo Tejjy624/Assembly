@@ -1,0 +1,33 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ stackstart, $030
+  2.              	.equ enable_ints, $80 ;ASCII character
+  3.              	.equ kbd_ctrl, $000
+  4.              	.equ kbd_data, $001
+  5.              	.equ crt_data, $317
+  6.              	.equ ex_point, $21	;ASCII character
+  7.              
+  8.  000 020030  	lds#	stackstart
+  9.  001 000080  	lda# enable_ints ;enables interrupts from specific devices
+ 10.  002 712000  	outb	kbd_ctrl ;device is specified to be keyboard
+ 11.              	
+ 12.  003 FFF032  	sie ;set interrupt flag. Now enable devices we need
+ 13.  004 FFF038  loop:	nop
+ 14.  005 FFF038  	nop
+ 15.  006 402004  	jmp loop
+ 16.              
+ 17.              	.equ @, $200
+ 18.  200 FFF010  kbd_int:	psha
+ 19.  201 702001  	inb	kbd_data ;get char from keyboard
+ 20.  202 000021  	lda#	ex_point ;loads exclamation point ! ($21 in Hex)
+ 21.  203 712317  	outb	crt_data
+ 22.  204 FFF013  	popa
+ 23.  205 FFF041  	irtn
+ 24.              
+ 25.              	.equ @, $FF8
+ 26.  FF8 000200  	.word kbd_int
+
+                     SYMBOL TABLE CONTENTS
+
+000317 = CRT_DATA        000080 = ENABLE_INTS     000021 = EX_POINT        
+000000 = KBD_CTRL        000001 = KBD_DATA        000200 = KBD_INT         
+000004 = LOOP            000030 = STACKSTART      

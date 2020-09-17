@@ -1,0 +1,16 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ	kbd_stat, $000	;naming ports
+  2.              	.equ kbd_data, $001
+  3.              	.equ display, $317
+  4.              
+  5.  000 702000  loop:	inb	kbd_stat	;load the status of keyboard
+  6.  001 4B2000  	jge	loop	;loops until something is typed
+  7.  002 702001  	inb	kbd_data	;load keyboard buffer
+  8.  003 712317  	outb	display	;display the characters typed
+  9.  004 402000  	jmp	loop
+ 10.              
+
+                     SYMBOL TABLE CONTENTS
+
+000317 = DISPLAY         000001 = KBD_DATA        000000 = KBD_STAT        
+000000 = LOOP            

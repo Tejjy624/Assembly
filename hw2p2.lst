@@ -1,0 +1,60 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ	@, $000
+  2.              	.equ	array, $101
+  3.  000 002100  	lda	$100
+  4.  001 042028  	sta	len
+  5.  002 002029  	lda	i
+  6.              
+  7.  003 202028  loop:	cma	len	;arrow on the left
+  8.  004 4B2025  	jge	end
+  9.  005 002029  	lda	i
+ 10.  006 042026  	sta	min
+ 11.  007 100001  	ada#	1
+ 12.  008 04202A  	sta	j
+ 13.              
+ 14.  009 202028  loop2:	cma	len	;arrow on the right
+ 15.  00A 4B2018  	jge	swap
+ 16.  00B 01202A  	ldx	j
+ 17.  00C 004101  	lda+	array
+ 18.  00D 04202B  	sta	min_val
+ 19.  00E 012026  	ldx	min
+ 20.  00F 004101  	lda+	array
+ 21.  010 20202B  	cma	min_val
+ 22.  011 4D2015  	jgt	loop3
+ 23.  012 1B202A  	inc	j
+ 24.  013 00202A  	lda	j
+ 25.  014 402009  	jmp	loop2
+ 26.              
+ 27.  015 00202A  loop3:	lda	j	;save lowest value
+ 28.  016 042026  	sta	min
+ 29.  017 402009  	jmp	loop2
+ 30.              
+ 31.  018 012029  swap:	ldx	i	;loop for swapping vals
+ 32.  019 004101  	lda+	array
+ 33.  01A 042027  	sta	temp
+ 34.  01B 012026  	ldx	min
+ 35.  01C 004101  	lda+	array
+ 36.  01D 012029  	ldx	i
+ 37.  01E 044101  	sta+	array
+ 38.  01F 002027  	lda	temp
+ 39.  020 012026  	ldx	min
+ 40.  021 044101  	sta+	array
+ 41.  022 1B2029  	inc	i
+ 42.  023 002029  	lda	i
+ 43.  024 402003  	jmp	loop
+ 44.              
+ 45.  025 FFFFFF  end:	hlt
+ 46.              
+ 47.  026 000000  min:	.word 0
+ 48.  027 000000  temp:	.word 0
+ 49.  028 000000  len:	.word 0
+ 50.  029 000000  i:	.word 0
+ 51.  02A 000000  j:	.word 0
+ 52.  02B 000000  min_val:	.word 0
+
+                     SYMBOL TABLE CONTENTS
+
+000101 = ARRAY           000025 = END             000029 = I               
+00002A = J               000028 = LEN             000003 = LOOP            
+000009 = LOOP2           000015 = LOOP3           000026 = MIN             
+00002B = MIN_VAL         000018 = SWAP            000027 = TEMP            

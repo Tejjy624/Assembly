@@ -1,0 +1,55 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ	@, $000
+  2.              	.equ	array, $102
+  3.  000 002100  	lda	$100
+  4.  001 042022  	sta	val
+  5.  002 002101  	lda	$101
+  6.  003 042023  	sta	len
+  7.  004 002023  	lda	len
+  8.  005 140001  	sba#	1
+  9.  006 042025  	sta	val_right
+ 10.  007 002024  	lda	val_left
+ 11.              
+ 12.  008 202025  loop:	cma	val_right
+ 13.  009 4D201E  	jgt	no
+ 14.  00A 102025  	ada	val_right
+ 15.  00B 190002  	div#	2
+ 16.  00C 042026  	sta	curr
+ 17.  00D 012026  	ldx	curr
+ 18.  00E 004102  	lda+	array
+ 19.  00F 202022  	cma	val
+ 20.  010 482020  	jeq	yes
+ 21.  011 202022  	cma	val
+ 22.  012 4D2014  	jgt	greater_than
+ 23.  013 402019  	jmp	less_than
+ 24.              
+ 25.  014 002026  greater_than:	lda	curr
+ 26.  015 140001  	sba#	1
+ 27.  016 042025  	sta	val_right
+ 28.  017 002024  	lda	val_left
+ 29.  018 402008  	jmp	loop
+ 30.              
+ 31.  019 002026  less_than:	lda	curr
+ 32.  01A 100001  	ada#	1
+ 33.  01B 042024  	sta	val_left
+ 34.  01C 002024  	lda	val_left
+ 35.  01D 402008  	jmp	loop
+ 36.              
+ 37.  01E 000000  no:	lda#	0
+ 38.  01F FFFFFF  	hlt
+ 39.              
+ 40.  020 000001  yes:	lda#	1
+ 41.  021 FFFFFF  	hlt
+ 42.              
+ 43.  022 000000  val:	.word 0
+ 44.  023 000000  len:	.word 0
+ 45.  024 000000  val_left:	.word 0
+ 46.  025 000000  val_right:	.word 0
+ 47.  026 000000  curr:	.word 0
+
+                     SYMBOL TABLE CONTENTS
+
+000102 = ARRAY           000026 = CURR            000014 = GREATER_THAN    
+000023 = LEN             000019 = LESS_THAN       000008 = LOOP            
+00001E = NO              000022 = VAL             000024 = VAL_LEFT        
+000025 = VAL_RIGHT       000020 = YES             

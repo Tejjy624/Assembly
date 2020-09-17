@@ -1,0 +1,47 @@
+	.equ	@, $000
+	.equ	array, $102
+	lda	$100
+	sta	val
+	lda	$101
+	sta	len
+	lda	len
+	sba#	1
+	sta	val_right
+	lda	val_left
+
+loop:	cma	val_right
+	jgt	no
+	ada	val_right
+	div#	2
+	sta	curr
+	ldx	curr
+	lda+	array
+	cma	val
+	jeq	yes
+	cma	val
+	jgt	greater_than
+	jmp	less_than
+
+greater_than:	lda	curr
+	sba#	1
+	sta	val_right
+	lda	val_left
+	jmp	loop
+
+less_than:	lda	curr
+	ada#	1
+	sta	val_left
+	lda	val_left
+	jmp	loop
+
+no:	lda#	0
+	hlt
+
+yes:	lda#	1
+	hlt
+
+val:	.word 0
+len:	.word 0
+val_left:	.word 0
+val_right:	.word 0
+curr:	.word 0

@@ -1,0 +1,92 @@
+;   Matrix Transpose
+;
+;   Ex:
+;   input: 3 x 4 matrix  
+;   | 0  1  2  3 |
+;   | 4  5  6  7 |   
+;   | 8  9 10 11 |
+;
+;   memory: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+;          
+;   output: 4 x 3 matrix     
+;   | 0  4   8 |
+;   | 1  5   9 |   
+;   | 2  6  10 |
+;   | 3  7  11 |
+;
+;   memory: [0, 4, 8, 1, 5, 9, 2, 6, 10, 3, 7, 11]
+;
+;void MatrixTranspose(int* mat, int num_rows, int num_cols, int* t_mat) {
+;   for (int r = 0; r < num_rows; r++) {
+;      int row_start_index = r * num_cols;
+;
+;      for (int c = 0; c < num_cols; c++) {
+;      	int t_row_start_index = c * num_rows;
+;
+;         // t_mat(c, r) = mat(r, c)
+;         t_mat[t_row_start_index + r] = mat[row_start_index + c] 
+;      }
+;   }
+;}
+
+.equ num_rows, 3
+.equ num_cols, 4
+
+clr r
+lda r
+
+for_r:
+cma# num_rows - 1
+jgt end_r
+mul# num_cols
+sta row_start_index     ; int row_start_index = r * num_cols
+clr c
+lda c
+
+for_c:
+cma# num_cols - 1
+jgt end_c
+
+mul# num_rows
+sta t_row_start_index    ; int t_row_start_index = c * num_rows
+
+; t_mat[t_row_start_index + r] = mat[row_start_index + c]
+ldx c
+adx row_start_index
+lda+ mat
+ldx r
+adx t_row_start_index
+sta+ t_mat
+
+inc c
+lda c
+jmp for_c
+
+end_c:
+inc r
+lda r
+jmp for_r
+
+end_r:
+hlt
+
+r: .word 0
+c: .word 0
+row_start_index: .word 0
+t_row_start_index: .word 0
+mat: 
+.word 0
+.word 1
+.word 2
+.word 3
+.word 4
+.word 5
+.word 6
+.word 7
+.word 8
+.word 9
+.word 10
+.word 11
+
+.equ @, $100
+t_mat: .blkw num_rows * num_cols

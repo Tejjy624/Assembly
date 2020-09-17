@@ -1,0 +1,319 @@
+;Tejvir Sohi
+;UCID: 914165808
+
+	.equ crt_vbuf, $100
+	.equ crt_cntl, $316
+	.equ crt_width, 38
+
+	.equ clear_screen, $01
+
+	.equ get_num, $E01
+	.equ put_num, $E00
+	.equ put_str, $E05
+	.equ put_nl, $E06
+	.equ put_chr, $E08
+
+	.equ kbd_cntl, $000
+	.equ kbd_data, $001
+
+	.equ tim_cntl, $30
+	.equ tim_sta, $30
+	.equ tim_value, $31
+
+	.equ interrupt_ena, $80
+	.equ enable_reset_and_start, $D0
+	.equ enable_and_reset, $C0
+	.equ stop, $20
+	.equ stacktop, $3FE
+
+main_program:
+	lds# stacktop
+	lda# array1
+	sta  a1ptr
+	lda# array2
+	sta  a2ptr
+initial_grid: 
+	lda# clear_screen
+	outb crt_cntl
+	psh# grid_str_len
+	psh# grid
+	jsr  put_str
+	jsr  put_nl
+	ads# 2
+
+print_gen:	lda  cur_gen
+	cma  num_gen
+	jgt  end
+	psh# generation_len
+	psh# generation
+	jsr  put_str
+	lda  cur_gen
+	jsr  put_num
+print_array:lda  num_col
+	ada  max_c
+	sta  max_c
+	lda  num_row
+	ada  max_r
+	sta  max_r
+	ldx# 0
+	clr  col_index
+	clr  row_index
+
+n_row:	clr  col_index
+n_col:	lda& a1ptr
+	cma# 1
+	jeq  one
+	lda# $2E
+	jsr  put_chr
+	jmp  next
+
+one:	lda# $2A
+	jsr  put_chr
+next:	lda# $20
+	jsr  put_chr
+	adx# 1
+	inc  col_index
+	lda  col_index
+	cma  num_col
+	jlt  n_col
+
+	jsr  put_nl
+	inc  row_index
+	lda  row_index
+	cma  num_row
+	jlt  n_row
+
+	jsr  put_nl
+	inc  cur_gen
+	lda  cur_gen
+	cma# 1
+	jeq  get_gen
+	jmp  change_array
+
+get_gen:	cie
+	psh# user_input_len
+	psh# user_input
+	jsr  put_str
+	ads# 2
+	jsr  get_num
+	sta  num_gen
+	jmp  print_gen
+;	sie
+;	lda timer_cycles
+;	outw tim_value
+;
+;	lda# enable_reset_and_start
+;	outb tim_cntl
+;
+;	lda# interrupt_ena
+;	outb kbd_cntl
+;
+;timer_isr:
+;	lda# enable_and_reset
+;	outb tim_cntl
+;
+;	inc cur_gen
+;	lda cur_gen
+;	cma num_gen
+;	jgt end_t_isr
+;	
+;	ldx# 0
+;	clr 
+;end_t_isr:	irtn
+change_array:
+	lds# stacktop
+	ldf# 0
+;	lda  a1ptr
+;	psha
+	psh  a1ptr
+	psh# num_row
+	psh# num_col
+	psh  a2ptr
+;	lda  a2ptr
+;	psha
+	jsr  nextGen
+	ads# 3
+
+	lda#  a1ptr
+	ldx#  a2ptr
+	sta  a2ptr
+	stx  a1ptr
+	jmp  print_gen
+
+end:	psh# end_len
+	psh# end_program
+	jsr  put_str
+	hlt
+row_index:	.word 0
+col_index:	.word 0
+max_r:	.word 0
+max_c:	.word 0
+cur_gen:	.word 0
+num_gen:	.word 3
+timer_cycles: .word 300000
+grid:	.char 'Here is the starting grid:', grid_str_len
+generation: .char 'Generation: ', generation_len
+user_input:	.char 'How many generations would you like to print (enter 0 to end)?', user_input_len
+end_program: .char 'End of program.', end_len
+num_row: 	.word 3
+num_col:	.word 3
+a1ptr:	.word 0
+a2ptr:	.word 0
+array1:	.word 0
+	.word 1
+	.word 0
+	.word 0
+	.word 1
+	.word 0
+	.word 0
+	.word 1
+	.word 0
+array2:	.blkw 9,0
+	.equ @, $FFB
+	;.word timer_isr
+	.equ @, $FF8
+	;.word keyboard_isr
+
+
+	.equ @, $400	;nextGen subroutine
+	.equ in, 6
+	.equ row,5
+	.equ col,4
+	.equ out,3
+nextGen:	pshf
+	psha
+	tsf
+	lda* !col
+	ada  num_c
+	sta  num_c
+	lda* !row
+	ada  num_r
+	sta  num_r
+	clr  r
+	clr  c
+	clr  alive_counter
+
+new_row:	clr  c
+new_col:	lda  r	;find pos and store it
+	mul* !col
+	ada  c
+	sta  pos
+	clr  alive_counter
+
+up:	lda	r
+	cma# 0
+	jeq  midleft
+	ldx  pos
+	sbx* !col
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+upleft:	lda  c
+	cma# 0
+	jeq  upright
+	ldx  pos
+	sbx* !col
+	sbx# 1
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+upright:	lda  c
+	cma  num_c
+	jeq  midleft
+	ldx  pos
+	sbx* !col
+	adx# 1
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+midleft:	lda  c
+	cma# 0
+	jeq  midright
+	ldx  pos
+	sbx# 1
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+midright:	lda	c
+	cma  num_c
+	jeq  bot
+	ldx  pos
+	adx# 1
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+bot:	lda  r
+	cma  num_r
+	jeq  decision
+	ldx  pos
+	adx* !col
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+botleft:	lda  c
+	cma# 0
+	jeq  botright
+	ldx  pos
+	adx* !col
+	sbx# 1
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+botright:	lda  c
+	cma  num_c
+	jeq  decision
+	ldx  pos
+	adx* !col
+	adx# 1
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+decision:	lda  alive_counter
+	cma# 1
+	jle  dead
+	cma# 4
+	jge  dead
+	cma# 3
+	jeq  alive
+	ldx  pos
+	lda& !in
+	cma# 1
+	jeq  alive
+
+dead:	ldx  pos
+	lda# 0
+	sta& !out
+	jmp  reset
+
+alive:	ldx  pos
+	lda# 1
+	sta& !out
+
+reset:	inc  c
+	lda  c
+	cma* !col
+	jlt  new_col
+	inc  r
+	lda  r
+	cma* !row
+	jlt  new_row
+
+endng:	popa
+	popf
+	rtn
+
+
+r:	.word 0 ;row index
+c:	.word 0 ;col index
+num_r:	.word -1 ;max row
+num_c:	.word -1 ;max col
+pos:	.word 0 ;position in array
+alive_counter:	.word 0 ;number of alive neighbors

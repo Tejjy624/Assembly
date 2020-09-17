@@ -1,0 +1,176 @@
+	.equ @, $000
+	.equ stack, $100
+	lds# stack
+	ldf# 0
+	psh# grid_in
+	psh# num_rows
+	psh#	num_cols
+	psh# grid_out
+	jsr	nextGen
+	ads#	3
+	hlt
+
+	.equ @, $200
+num_rows: 	.word 4
+num_cols:	.word 4
+grid_in:	.word 0
+	.word 0
+	.word 0
+	.word 0
+	.word 0
+	.word 1
+	.word 1
+	.word 0
+	.word 0
+	.word 1
+	.word 1
+	.word 0
+	.word 0
+	.word 0
+	.word 0
+	.word 0
+grid_out:	.blkw 16,2
+
+	.equ @, $400
+	.equ in, 6
+	.equ row,5
+	.equ col,4
+	.equ out,3
+nextGen:	pshf
+	psha
+	tsf
+	lda* !col
+	ada  num_c
+	sta  num_c
+	lda* !row
+	ada  num_r
+	sta  num_r
+	ldx# 0
+	clr  r
+	clr  c
+	clr  alive_counter
+
+new_row:	clr  c
+new_col:	lda  r	;find pos and store it
+	mul* !col
+	ada  c
+	sta  pos
+	clr  alive_counter
+
+up:	lda	r
+	cma# 0
+	jeq  midleft
+	ldx  pos
+	sbx* !col
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+upleft:	lda  c
+	cma# 0
+	jeq  upright
+	ldx  pos
+	sbx* !col
+	sbx# 1
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+upright:	lda  c
+	cma  num_c
+	jeq  midleft
+	ldx  pos
+	sbx* !col
+	adx# 1
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+midleft:	lda  c
+	cma# 0
+	jeq  midright
+	ldx  pos
+	sbx# 1
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+midright:	lda	c
+	cma  num_c
+	jeq  bot
+	ldx  pos
+	adx# 1
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+bot:	lda  r
+	cma  num_r
+	jeq  decision
+	ldx  pos
+	adx* !col
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+botleft:	lda  c
+	cma# 0
+	jeq  botright
+	ldx  pos
+	adx* !col
+	sbx# 1
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+botright:	lda  c
+	cma  num_c
+	jeq  decision
+	ldx  pos
+	adx* !col
+	adx# 1
+	lda& !in
+	ada  alive_counter
+	sta  alive_counter
+
+decision:	lda  alive_counter
+	cma# 1
+	jle  dead
+	cma# 4
+	jge  dead
+	cma# 3
+	jeq  alive
+	ldx  pos
+	lda& !in
+	cma# 1
+	jeq  alive
+
+dead:	ldx  pos
+	lda# 0
+	sta& !out
+	jmp  reset
+
+alive:	ldx  pos
+	lda# 1
+	sta& !out
+
+reset:	inc  c
+	lda  c
+	cma* !col
+	jlt  new_col
+	inc  r
+	lda  r
+	cma* !row
+	jlt  new_row
+
+end:	popa
+	popf
+	rtn
+
+
+r:	.word 0 ;row index
+c:	.word 0 ;col index
+num_r:	.word -1 ;max row
+num_c:	.word -1 ;max col
+pos:	.word 0 ;position in array
+alive_counter:	.word 0 ;number of alive neighbors

@@ -1,0 +1,76 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @, $000
+  2.              	.equ stack, $100
+  3.  000 020100  	lds#	stack	;calling program
+  4.  001 030000  	ldf#	0
+  5.  002 080040  	psh#	matrix
+  6.  003 080003  	psh#	3
+  7.  004 080004  	psh#	4
+  8.  005 080070  	psh#	$070	;location of new matrix. Can be changed
+  9.  006 412020  	jsr	function	;calls subroutine
+ 10.  007 120004  	ads#	4
+ 11.  008 FFFFFF  	hlt
+ 12.              	.equ @, $040	;example 3 by 2 matrix
+ 13.  040 000000  matrix:	.word 0
+ 14.  041 000001  	.word 1
+ 15.  042 000002  	.word 2
+ 16.  043 000003  	.word 3
+ 17.  044 000004  	.word 4
+ 18.  045 000005  	.word 5	
+ 19.  046 000006  	.word 6
+ 20.  047 000007  	.word 7
+ 21.  048 000008  	.word 8
+ 22.  049 000009  	.word 9
+ 23.  04A 00000A  	.word 10
+ 24.  04B 00000B  	.word 11
+ 25.              
+ 26.              	.equ	@,$020	;transpose subroutine
+ 27.              	.equ t_matrix, 2
+ 28.              	.equ	num_cols, 3
+ 29.              	.equ	num_rows, 4
+ 30.              	.equ ini_mat, 5
+ 31.  020 FFF012  function:	pshf
+ 32.  021 FFF008  	tsf
+ 33.  022 00203B  	lda	r
+ 34.              
+ 35.  023 203004  row:	cma !num_rows	;loop for rows
+ 36.  024 482039  	jeq	row_end
+ 37.  025 183003  	mul !num_cols
+ 38.  026 04203D  	sta	matrix_pos
+ 39.  027 0A203C  	clr	c
+ 40.  028 00203C  	lda	c
+ 41.              
+ 42.  029 203003  col:	cma !num_cols	;loop for columns
+ 43.  02A 482036  	jeq	col_end
+ 44.  02B 183004  	mul !num_rows
+ 45.  02C 04203E  	sta	t_matrix_pos
+ 46.  02D 01203C  	ldx	c
+ 47.  02E 11203D  	adx	matrix_pos
+ 48.  02F 009005  	lda& !ini_mat
+ 49.  030 01203B  	ldx	r
+ 50.  031 11203E  	adx	t_matrix_pos
+ 51.  032 049002  	sta& !t_matrix
+ 52.  033 1B203C  	inc	c
+ 53.  034 00203C  	lda	c
+ 54.  035 402029  	jmp	col
+ 55.              
+ 56.  036 1B203B  col_end:	inc	r	
+ 57.  037 00203B  	lda	r
+ 58.  038 402023  	jmp	row
+ 59.              
+ 60.  039 FFF015  row_end:	popf
+ 61.  03A FFF040  	rtn
+ 62.              
+ 63.  03B 000000  r:	.word 0	;temporary variables for subroutine
+ 64.  03C 000000  c:	.word 0
+ 65.  03D 000000  matrix_pos:	.word 0
+ 66.  03E 000000  t_matrix_pos: .word 0
+ 67.              
+
+                     SYMBOL TABLE CONTENTS
+
+00003C = C               000029 = COL             000036 = COL_END         
+000020 = FUNCTION        000005 = INI_MAT         000040 = MATRIX          
+00003D = MATRIX_POS      000003 = NUM_COLS        000004 = NUM_ROWS        
+00003B = R               000023 = ROW             000039 = ROW_END         
+000100 = STACK           000002 = T_MATRIX        00003E = T_MATRIX_POS    

@@ -1,0 +1,17 @@
+	.equ @, $100
+loop:	lda	counter
+	cma	n
+	jgt	end
+	mul	multiplier
+	ada	sum
+	sta	sum
+	neg	multiplier
+	inc	counter
+	jmp	loop
+end:	hlt
+
+	.equ	@, $010
+sum:	.word 0
+n:	.word 4
+counter:	.word 1
+multiplier:	.word 1

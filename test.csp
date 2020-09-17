@@ -1,0 +1,19 @@
+	.equ stack, $050
+	lds# stack
+	lda# array1
+	sta  a1
+	lda# array2
+	sta  a2
+	psh# array1
+	psh  a1
+	psh# a1
+	psh# array2
+	psh  a2
+	psh# a2
+	
+	hlt
+
+a1:	.word 0
+a2:	.word 0
+array1:	.word 5
+array2:	.word 10

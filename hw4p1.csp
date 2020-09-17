@@ -1,0 +1,52 @@
+	.equ @, $000
+	.equ stack, $100
+	lds#	stack
+	ldf#	0
+	psh#	in	;starting address of string
+	psh#	length	;number of characters
+	psh#	$060	;starting address of converted string
+	jsr	swapcase
+	ads#	3
+	hlt
+
+in:	.char 'HWERwerTRty34%%YB6UR%$D67EEEEEEEE', length
+
+	.equ	@, $060
+out:	.blkw length
+
+	.equ	@, $020	;swapcase
+	.equ	ini, 4
+	.equ	len, 3
+	.equ new, 2
+
+swapcase:	pshf
+	tsf
+	ldx# 0
+
+loop:	cmx* !len
+	jge	end
+	ldc* !ini
+	cma#	'a'
+	jlt	upper
+	cma#	'z'
+	jgt	nonchar
+	sba#	'a'-'A'
+	stc* !new
+	adx# 1
+	jmp	loop
+
+upper:	cma# 'A'
+	jlt	nonchar
+	cma# 'Z'
+	jgt	nonchar
+	ada# 'a'-'A'
+	stc* !new
+	adx#	1
+	jmp  loop
+
+nonchar:	stc* !new
+	adx# 1
+	jmp  loop
+
+end:	popf
+	rtn

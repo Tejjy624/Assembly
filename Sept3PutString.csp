@@ -1,0 +1,32 @@
+	.equ	@, $000
+	.equ put_str,$E05
+	lds#	$100
+	ldf#	0
+	psh#	prompt_len
+	psh#	prompt
+	jsr	put_str
+	ads#	2
+	hlt
+prompt:	.char 'how many cookies?', prompt_len
+
+; put_str subroutine
+;	.equ	@, $020
+;	.equ chars, 3
+;	.equ string, 2
+;	.equ crt_data, $317
+;
+;put_str:	pshf	;store frame pointer
+;	tsf
+;	psha	;store accumulator
+;	pshx	;store index register
+;
+;	ldx# 0
+;p_loop:	ldc* !string
+;	outb	crt_data
+;	aoc !chars
+;	jlt	p_loop
+;
+;	popx
+;	popa
+;	popf
+;	rtn

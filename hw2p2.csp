@@ -1,0 +1,52 @@
+	.equ	@, $000
+	.equ	array, $101
+	lda	$100
+	sta	len
+	lda	i
+
+loop:	cma	len	;arrow on the left
+	jge	end
+	lda	i
+	sta	min
+	ada#	1
+	sta	j
+
+loop2:	cma	len	;arrow on the right
+	jge	swap
+	ldx	j
+	lda+	array
+	sta	min_val
+	ldx	min
+	lda+	array
+	cma	min_val
+	jgt	loop3
+	inc	j
+	lda	j
+	jmp	loop2
+
+loop3:	lda	j	;save lowest value
+	sta	min
+	jmp	loop2
+
+swap:	ldx	i	;loop for swapping vals
+	lda+	array
+	sta	temp
+	ldx	min
+	lda+	array
+	ldx	i
+	sta+	array
+	lda	temp
+	ldx	min
+	sta+	array
+	inc	i
+	lda	i
+	jmp	loop
+
+end:	hlt
+
+min:	.word 0
+temp:	.word 0
+len:	.word 0
+i:	.word 0
+j:	.word 0
+min_val:	.word 0

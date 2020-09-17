@@ -1,0 +1,164 @@
+	.equ @, $000
+	.equ stack, $100
+	lds# stack
+	ldf# 0
+	psh# grid_in
+	psh# num_rows
+	psh#	num_cols
+	psh# grid_out
+	jsr	nextGen
+	ads#	3
+	hlt
+
+	.equ @, $200
+num_rows: 	.word 2
+num_cols:	.word 2
+grid_in:	.word 0
+	.word 1
+	.word 1
+	.word 1
+;	.word 1
+;	.word 0
+;	.word 0
+;	.word 1
+;	.word 0
+grid_out:	.blkw 4
+
+	.equ @, $400
+	.equ in, 5
+	.equ row,4
+	.equ col,3
+	.equ out,2
+nextGen:	pshf
+	tsf
+	clr  i
+;	ldx#	0
+
+row_loop:	clr  j
+col_loop:	lda  i
+	mul* !col
+	ada  j
+	sta  pos
+	clr  neighbor
+	lda  i
+	cma# 0
+	jeq  midleft
+	
+uptop:	lda  j
+	cma# 0
+	jeq  upmiddle
+	ldx  pos
+	sbx* !col
+	sbx# 1
+	lda& !in
+	ada  neighbor
+	sta  neighbor
+
+upmiddle:	ldx  pos
+	sbx* !col
+	lda& !in
+	ada  neighbor
+	sta  neighbor
+
+upright:	lda  j
+	cma* !col
+	jge  midleft
+	ldx  pos
+	sbx* !col
+	adx# 1
+	lda& !in
+	ada  neighbor
+	sta  neighbor
+
+midleft:	lda  j
+	cma# 0
+	jeq  midright
+	ldx  pos
+	sbx# 1
+	lda& !in
+	ada  neighbor
+	sta  neighbor
+
+midright:	lda  j
+	cma* !col
+	jge  down
+	ldx  pos
+	adx# 1
+	lda& !in
+	ada  neighbor
+	sta  neighbor
+
+down:	lda  i
+	ada# 1
+	cma* !row
+	jge  updatecell
+
+downleft:	lda  j
+	cma# 0
+	jeq  downmiddle
+	
+	ldx  pos
+	adx* !col
+	sbx# 1
+	lda& !in
+	ada  neighbor
+	sta  neighbor
+
+downmiddle:	ldx  pos
+	adx* !col
+	lda& !in
+	ada  neighbor
+	sta  neighbor
+
+downright:	lda  j
+	cma* !col
+	jge  updatecell
+	ldx  pos
+	adx* !col
+	adx# 1
+	lda& !in
+	ada  neighbor
+	sta  neighbor
+
+updatecell:	ldx  pos
+	lda& !in
+	sta& !out
+	cma# 0
+	jeq  dead
+
+alive:	lda  neighbor
+	cma# 1
+	jgt  testoc
+	lda# 0
+	sta& !out
+	jmp  next
+
+testoc:	cma# 4
+	jlt  next
+	lda# 0
+	sta& !out
+	jmp  next
+
+dead:	lda  neighbor
+	cma# 3
+	jne  next
+	lda# 1
+	sta& !out
+
+next:	inc  j
+	lda  j
+	cma* !col
+	jlt  col_loop
+	
+	inc  i
+	lda  i
+	cma* !row
+	jlt  row_loop
+	popf
+	rtn
+
+;variables
+i:	.word 0 ;row index
+j:	.word 0 ;col index
+pos:	.word 0 ;position in array
+neighbor:	.word 0 ;number of neighbors

@@ -1,0 +1,101 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              ;   Matrix Transpose
+  2.              ;
+  3.              ;   Ex:
+  4.              ;   input: 3 x 4 matrix  
+  5.              ;   | 0  1  2  3 |
+  6.              ;   | 4  5  6  7 |   
+  7.              ;   | 8  9 10 11 |
+  8.              ;
+  9.              ;   memory: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+ 10.              ;          
+ 11.              ;   output: 4 x 3 matrix     
+ 12.              ;   | 0  4   8 |
+ 13.              ;   | 1  5   9 |   
+ 14.              ;   | 2  6  10 |
+ 15.              ;   | 3  7  11 |
+ 16.              ;
+ 17.              ;   memory: [0, 4, 8, 1, 5, 9, 2, 6, 10, 3, 7, 11]
+ 18.              ;
+ 19.              ;void MatrixTranspose(int* mat, int num_rows, int num_cols, int* t_mat) {
+ 20.              ;   for (int r = 0; r < num_rows; r++) {
+ 21.              ;      int row_start_index = r * num_cols;
+ 22.              ;
+ 23.              ;      for (int c = 0; c < num_cols; c++) {
+ 24.              ;      	int t_row_start_index = c * num_rows;
+ 25.              ;
+ 26.              ;         // t_mat(c, r) = mat(r, c)
+ 27.              ;         t_mat[t_row_start_index + r] = mat[row_start_index + c] 
+ 28.              ;      }
+ 29.              ;   }
+ 30.              ;}
+ 31.              
+ 32.              .equ num_rows, 3
+ 33.              .equ num_cols, 4
+ 34.              
+ 35.  000 0A2019  clr r
+ 36.  001 002019  lda r
+ 37.              
+ 38.              for_r:
+ 39.  002 200002  cma# num_rows - 1
+ 40.  003 4D2018  jgt end_r
+ 41.  004 180004  mul# num_cols
+ 42.  005 04201B  sta row_start_index     ; int row_start_index = r * num_cols
+ 43.  006 0A201A  clr c
+ 44.  007 00201A  lda c
+ 45.              
+ 46.              for_c:
+ 47.  008 200003  cma# num_cols - 1
+ 48.  009 4D2015  jgt end_c
+ 49.              
+ 50.  00A 180003  mul# num_rows
+ 51.  00B 04201C  sta t_row_start_index    ; int t_row_start_index = c * num_rows
+ 52.              
+ 53.              ; t_mat[t_row_start_index + r] = mat[row_start_index + c]
+ 54.  00C 01201A  ldx c
+ 55.  00D 11201B  adx row_start_index
+ 56.  00E 00401D  lda+ mat
+ 57.  00F 012019  ldx r
+ 58.  010 11201C  adx t_row_start_index
+ 59.  011 044100  sta+ t_mat
+ 60.              
+ 61.  012 1B201A  inc c
+ 62.  013 00201A  lda c
+ 63.  014 402008  jmp for_c
+ 64.              
+ 65.              end_c:
+ 66.  015 1B2019  inc r
+ 67.  016 002019  lda r
+ 68.  017 402002  jmp for_r
+ 69.              
+ 70.              end_r:
+ 71.  018 FFFFFF  hlt
+ 72.              
+ 73.  019 000000  r: .word 0
+ 74.  01A 000000  c: .word 0
+ 75.  01B 000000  row_start_index: .word 0
+ 76.  01C 000000  t_row_start_index: .word 0
+ 77.              mat: 
+ 78.  01D 000000  .word 0
+ 79.  01E 000001  .word 1
+ 80.  01F 000002  .word 2
+ 81.  020 000003  .word 3
+ 82.  021 000004  .word 4
+ 83.  022 000005  .word 5
+ 84.  023 000006  .word 6
+ 85.  024 000007  .word 7
+ 86.  025 000008  .word 8
+ 87.  026 000009  .word 9
+ 88.  027 00000A  .word 10
+ 89.  028 00000B  .word 11
+ 90.              
+ 91.              .equ @, $100
+ 92.  100 FFFFFFFFFFFFFFFF  t_mat: .blkw num_rows * num_cols
+ 93.              
+
+                     SYMBOL TABLE CONTENTS
+
+00001A = C               000015 = END_C           000018 = END_R           
+000008 = FOR_C           000002 = FOR_R           00001D = MAT             
+000004 = NUM_COLS        000003 = NUM_ROWS        000019 = R               
+00001B = ROW_START_INDEX 000100 = T_MAT           00001C = T_ROW_START_INDEX

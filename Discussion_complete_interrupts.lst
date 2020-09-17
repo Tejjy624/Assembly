@@ -1,0 +1,188 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              .equ  crt_vbuf, $100	;address of crt pizels
+  2.              .equ  crt_cntl, $316
+  3.              .equ  crt_width, 38
+  4.              
+  5.              .equ  clear_screen, $01
+  6.              
+  7.              .equ  get_num, $E01
+  8.              .equ  put_str, $E05
+  9.              .equ  put_nl, $E06
+ 10.              
+ 11.              .equ  kbd_cntl, $000
+ 12.              .equ  kbd_data, $001
+ 13.              
+ 14.              .equ  tim_cntl, $30
+ 15.              .equ  tim_sta, $30
+ 16.              .equ  tim_value, $31
+ 17.              
+ 18.              .equ  interrupt_ena, $80	;set leftmost bit (bit 7)
+ 19.              
+ 20.              .equ  enable_reset_and_start, $D0	;set these bits for timer at beginning
+ 21.              .equ  enable_and_reset, $C0	;enable and reset timer after interrupt
+ 22.              
+ 23.              .equ  stacktop, $E00
+ 24.              
+ 25.              main:
+ 26.  000 020E00  lds# stacktop
+ 27.              
+ 28.              get_user_input:
+ 29.  001 FFF033  cie	;disable all interrupts
+ 30.              
+ 31.  002 000001  lda# clear_screen
+ 32.  003 712316  outb crt_cntl
+ 33.              
+ 34.  004 080014  psh# row_str_len
+ 35.  005 080055  psh# row_string
+ 36.  006 412E05  jsr  put_str
+ 37.  007 120002  ads# 2
+ 38.  008 412E01  jsr  get_num	;get number from user
+ 39.  009 04204E  sta  num_rows
+ 40.  00A 080014  psh# col_str_len
+ 41.  00B 412E05  jsr  put_str
+ 42.  00C 120002  ads# 2
+ 43.  00D 412E01  jsr  get_num	;get number from user
+ 44.  00E 04204F  sta  num_cols
+ 45.              
+ 46.  00F 000030  lda# $30	;load digit zero
+ 47.  010 042052  sta  character
+ 48.              
+ 49.              ;wipe the screen
+ 50.  011 000001  lda# clear_screen
+ 51.  012 712316  outb crt_cntl
+ 52.              
+ 53.  013 FFF032  sie	;enalbe all interrupts
+ 54.              
+ 55.  014 002054  lda  timer_cycles	;number of cycles until timer interrupt
+ 56.  015 732031  outw tim_value
+ 57.              
+ 58.              ;enable timer interrupts, reset ready bit and start timer after loading counter
+ 59.  016 0000D0  lda# enable_reset_and_start
+ 60.  017 712030  outb tim_cntl
+ 61.              
+ 62.              ; (re_-enable keyborad interrupts
+ 63.              ;get_num may have  disabled them before
+ 64.  018 000080  lda# interrupt_ena
+ 65.  019 712000  outb kbd_cntl
+ 66.              
+ 67.              loop:
+ 68.  01A 002052  lda  character
+ 69.  01B 202053  cma  max_character
+ 70.  01C 4D2001  jgt  get_user_input
+ 71.  01D 40201A  jmp  loop
+ 72.  01E FFFFFF  hlt
+ 73.              
+ 74.              timer_isr:
+ 75.  01F 0000C0  lda# enable_and_reset
+ 76.  020 712030  outb tim_cntl	;resert ready bit
+ 77.              
+ 78.  021 1B2052  inc  character
+ 79.  022 002052  lda  character
+ 80.  023 202053  cma  max_character
+ 81.  024 4D2036  jgt  end_t_isr	;rached the max char, return and prompt user
+ 82.              
+ 83.  025 010000  ldx# 0
+ 84.  026 0A2051  clr  col
+ 85.  027 0A2050  clr  row
+ 86.              
+ 87.              t_grid_loop:
+ 88.  028 002052  lda  character
+ 89.  029 714100  outb+ crt_vbuf	;write to screen
+ 90.  02A 110001  adx# 1
+ 91.  02B 1B2051  inc  col
+ 92.  02C 002051  lda  col
+ 93.  02D 20204F  cma  num_cols
+ 94.  02E 4A2028  jlt  t_grid_loop
+ 95.              
+ 96.              ;go to the next line int he screen by using index += crt_width - num_cols
+ 97.  02F 110026  adx# crt_width
+ 98.  030 15204F  sbx  num_cols
+ 99.              
+100.  031 0A2051  clr  col
+101.  032 1B2050  inc  row
+102.  033 002050  lda  row
+103.  034 20204E  cma  num_rows
+104.  035 4A2028  jlt  t_grid_loop
+105.              
+106.              end_t_isr:
+107.  036 FFF041  irtn
+108.              
+109.              keyboard_isr:
+110.  037 702001  inb kbd_data ; rad kbd char from buffer
+111.              
+112.  038 1B2052  inc  character
+113.  039 002052  lda  character
+114.  03A 202053  cma  max_character
+115.  03B 4D204D  jgt  end_k_isr	;rached the max char, return and prompt user
+116.              
+117.  03C 010000  ldx# 0
+118.  03D 0A2051  clr  col
+119.  03E 0A2050  clr  row
+120.              
+121.              k_grid_loop:
+122.  03F 002052  lda  character
+123.  040 714100  outb+ crt_vbuf	;write to screen
+124.  041 110001  adx# 1
+125.  042 1B2051  inc  col
+126.  043 002051  lda  col
+127.  044 20204F  cma  num_cols
+128.  045 4A203F  jlt  k_grid_loop
+129.              
+130.              ;go to the next line int he screen by using index += crt_width - num_cols
+131.  046 110026  adx# crt_width
+132.  047 15204F  sbx  num_cols
+133.              
+134.  048 0A2051  clr  col
+135.  049 1B2050  inc  row
+136.  04A 002050  lda  row
+137.  04B 20204E  cma  num_rows
+138.  04C 4A203F  jlt  k_grid_loop
+139.              
+140.              end_k_isr:
+141.  04D FFF041  irtn
+142.              
+143.              
+144.  04E 000000  num_rows:	.word 0
+145.  04F 000000  num_cols:	.word 0
+146.  050 000000  row:	.word 0
+147.  051 000000  col:	.word 0
+148.  052 000030  character:	.word $30	;0
+149.  053 000039  max_character:	.word $39	;9
+150.  054 0493E0  timer_cycles:	.word 300000
+151.              
+152.  055 656E74  row_string: .char 'enter number of rows', row_str_len
+      056 657220
+      057 6E756D
+      058 626572
+      059 206F66
+      05A 20726F
+      05B 777320
+153.  05C 656E74  col_string: .char 'enter number of cols', col_str_len
+      05D 657220
+      05E 6E756D
+      05F 626572
+      060 206F66
+      061 20636F
+      062 6C7320
+154.              
+155.              .equ @, $FFB	;interrupt address for timer
+156.  FFB 00001F  .word timer_isr
+157.              
+158.              
+159.              .equ @, $FF8
+160.  FF8 000037  .word keyboard_isr
+
+                     SYMBOL TABLE CONTENTS
+
+000052 = CHARACTER       000001 = CLEAR_SCREEN    000051 = COL             
+00005C = COL_STRING      000014 = COL_STR_LEN     000316 = CRT_CNTL        
+000100 = CRT_VBUF        000026 = CRT_WIDTH       0000C0 = ENABLE_AND_RESET
+0000D0 = ENABLE_RESET_AND_START00004D = END_K_ISR       000036 = END_T_ISR       
+000E01 = GET_NUM         000001 = GET_USER_INPUT  000080 = INTERRUPT_ENA   
+000000 = KBD_CNTL        000001 = KBD_DATA        000037 = KEYBOARD_ISR    
+00003F = K_GRID_LOOP     00001A = LOOP            000000 = MAIN            
+000053 = MAX_CHARACTER   00004F = NUM_COLS        00004E = NUM_ROWS        
+000E06 = PUT_NL          000E05 = PUT_STR         000050 = ROW             
+000055 = ROW_STRING      000014 = ROW_STR_LEN     000E00 = STACKTOP        
+000054 = TIMER_CYCLES    00001F = TIMER_ISR       000030 = TIM_CNTL        
+000030 = TIM_STA         000031 = TIM_VALUE       000028 = T_GRID_LOOP     

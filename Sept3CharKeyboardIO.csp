@@ -1,0 +1,9 @@
+	.equ	kbd_stat, $000	;naming ports
+	.equ kbd_data, $001
+	.equ display, $317
+
+loop:	inb	kbd_stat	;load the status of keyboard
+	jge	loop	;loops until something is typed
+	inb	kbd_data	;load keyboard buffer
+	outb	display	;display the characters typed
+	jmp	loop

@@ -1,0 +1,160 @@
+.equ  crt_vbuf, $100	;address of crt pizels
+.equ  crt_cntl, $316
+.equ  crt_width, 38
+
+.equ  clear_screen, $01
+
+.equ  get_num, $E01
+.equ  put_str, $E05
+.equ  put_nl, $E06
+
+.equ  kbd_cntl, $000
+.equ  kbd_data, $001
+
+.equ  tim_cntl, $30
+.equ  tim_sta, $30
+.equ  tim_value, $31
+
+.equ  interrupt_ena, $80	;set leftmost bit (bit 7)
+
+.equ  enable_reset_and_start, $D0	;set these bits for timer at beginning
+.equ  enable_and_reset, $C0	;enable and reset timer after interrupt
+
+.equ  stacktop, $E00
+
+main:
+lds# stacktop
+
+get_user_input:
+cie	;disable all interrupts
+
+lda# clear_screen
+outb crt_cntl
+
+psh# row_str_len
+psh# row_string
+jsr  put_str
+ads# 2
+jsr  get_num	;get number from user
+sta  num_rows
+psh# col_str_len
+jsr  put_str
+ads# 2
+jsr  get_num	;get number from user
+sta  num_cols
+
+lda# $30	;load digit zero
+sta  character
+
+;wipe the screen
+lda# clear_screen
+outb crt_cntl
+
+sie	;enalbe all interrupts
+
+lda  timer_cycles	;number of cycles until timer interrupt
+outw tim_value
+
+;enable timer interrupts, reset ready bit and start timer after loading counter
+lda# enable_reset_and_start
+outb tim_cntl
+
+; (re_-enable keyborad interrupts
+;get_num may have  disabled them before
+lda# interrupt_ena
+outb kbd_cntl
+
+loop:
+lda  character
+cma  max_character
+jgt  get_user_input
+jmp  loop
+hlt
+
+timer_isr:
+lda# enable_and_reset
+outb tim_cntl	;resert ready bit
+
+inc  character
+lda  character
+cma  max_character
+jgt  end_t_isr	;rached the max char, return and prompt user
+
+ldx# 0
+clr  col
+clr  row
+
+t_grid_loop:
+lda  character
+outb+ crt_vbuf	;write to screen
+adx# 1
+inc  col
+lda  col
+cma  num_cols
+jlt  t_grid_loop
+
+;go to the next line int he screen by using index += crt_width - num_cols
+adx# crt_width
+sbx  num_cols
+
+clr  col
+inc  row
+lda  row
+cma  num_rows
+jlt  t_grid_loop
+
+end_t_isr:
+irtn
+
+keyboard_isr:
+inb kbd_data ; rad kbd char from buffer
+
+inc  character
+lda  character
+cma  max_character
+jgt  end_k_isr	;rached the max char, return and prompt user
+
+ldx# 0
+clr  col
+clr  row
+
+k_grid_loop:
+lda  character
+outb+ crt_vbuf	;write to screen
+adx# 1
+inc  col
+lda  col
+cma  num_cols
+jlt  k_grid_loop
+
+;go to the next line int he screen by using index += crt_width - num_cols
+adx# crt_width
+sbx  num_cols
+
+clr  col
+inc  row
+lda  row
+cma  num_rows
+jlt  k_grid_loop
+
+end_k_isr:
+irtn
+
+
+num_rows:	.word 0
+num_cols:	.word 0
+row:	.word 0
+col:	.word 0
+character:	.word $30	;0
+max_character:	.word $39	;9
+timer_cycles:	.word 300000
+
+row_string: .char 'enter number of rows', row_str_len
+col_string: .char 'enter number of cols', col_str_len
+
+.equ @, $FFB	;interrupt address for timer
+.word timer_isr
+
+
+.equ @, $FF8
+.word keyboard_isr

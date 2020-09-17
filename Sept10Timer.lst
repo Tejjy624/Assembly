@@ -1,0 +1,44 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ crt_data, $317
+  2.              	.equ tim_ctrl, $030
+  3.              	.equ tim_stat, $030
+  4.              	.equ tim_val, $031
+  5.              	.equ bell, $07
+  6.              	.equ reset_ready_bit, $40
+  7.              	.equ start_after_load, $10
+  8.              	.equ put_str, $E05
+  9.  000 00200F  main:	lda  reload
+ 10.  001 732031  	outw tim_val
+ 11.  002 000050  	lda# reset_ready_bit + start_after_load ;this way the variables are still seperately usable
+ 12.  003 712030  	outb tim_ctrl
+ 13.              
+ 14.  004 702030  loop:	inb  tim_stat
+ 15.  005 4B2004  	jge  loop
+ 16.              
+ 17.  006 000040  	lda# reset_ready_bit
+ 18.  007 712030  	outb tim_ctrl
+ 19.  008 000007  	lda# bell
+ 20.  009 712317  	outb crt_data
+ 21.  00A 080016  	psh# msg1_len
+ 22.  00B 080010  	psh# msg1
+ 23.  00C 412E05  	jsr  put_str
+ 24.  00D 120002  	ads# 2
+ 25.  00E 402004  	jmp loop
+ 26.  00F 002000  reload:	.word $002000
+ 27.  010 617265  msg1:	.char 'are you annoyed yet?\cr\lf', msg1_len
+      011 20796F
+      012 752061
+      013 6E6E6F
+      014 796564
+      015 207965
+      016 743F0D
+      017 0A2020
+      018 FFFFFFFFFFFFFFFF
+
+                     SYMBOL TABLE CONTENTS
+
+000007 = BELL            000317 = CRT_DATA        000004 = LOOP            
+000000 = MAIN            000010 = MSG1            000016 = MSG1_LEN        
+000E05 = PUT_STR         00000F = RELOAD          000040 = RESET_READY_BIT 
+000010 = START_AFTER_LOAD000030 = TIM_CTRL        000030 = TIM_STAT        
+000031 = TIM_VAL         

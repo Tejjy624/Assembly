@@ -1,0 +1,40 @@
+	.equ array, $101
+	lda	$100
+	sta	len
+
+for:	lda	i
+	cma	len
+	jge	end
+	ldx	i
+	lda+	array
+	sta	current
+	lda	i
+	sta	position
+
+while:	ldx	position
+	sbx#	1
+	lda+	array
+	cma	current
+	jge	swap
+	ldx	position
+	sta+	array
+	dec	position
+
+swap:	sta	temp
+	lda	current
+	sta+	array
+	lda	temp
+	ldx	position
+	sta+	array
+	inc	i
+	ldx	i
+	jmp	while
+	
+end:	hlt
+
+right:	.word 0
+len:	.word 0
+i:	.word 1
+current:	.word 0
+position:	.word 0
+temp:	.word 0

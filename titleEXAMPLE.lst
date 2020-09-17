@@ -1,0 +1,80 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              ;new_word = 1
+  2.              ;L=8
+  3.              ;for i in range(L):
+  4.              ;	ch = input_string(i)
+  5.              ;	if ch >= 'a' and ch <= 'z' or ch>= 'A' and ch <= 'Z':
+  6.              ;		if new_word ==1:
+  7.              ;			new_word = 0
+  8.              ;			ch=Upper(ch)
+  9.              ;		else:
+ 10.              ;			ch=Lower(ch)
+ 11.              ;	else:
+ 12.              ;		new_word = 1
+ 13.              
+ 14.  000 000001  	lda# 1
+ 15.  001 042021  	sta new_word
+ 16.              
+ 17.  002 010000  	ldx# 0
+ 18.              
+ 19.  003 212062  loop:	cmx length
+ 20.  004 4B2020  	jge done
+ 21.  005 502060  	ldc input
+ 22.              
+ 23.  006 200061  is_lower:	cma# 'a'
+ 24.  007 4A200B  	jlt is_upper
+ 25.  008 20007A  	cma# 'z'
+ 26.  009 4D200B  	jgt is_upper
+ 27.  00A 40200F  	jmp is_new_word
+ 28.              
+ 29.  00B 200041  is_upper:	cma# 'A'
+ 30.  00C 4A201A  	jlt not_alpha
+ 31.  00D 20005A  	cma# 'Z'
+ 32.  00E 4D201A  	jgt not_alpha
+ 33.              
+ 34.              is_new_word:
+ 35.  00F 002021  	lda new_word
+ 36.  010 200001  	cma# 1
+ 37.  011 492017  	jne not_new_word
+ 38.              
+ 39.  012 000000  	lda# 0	;new_word = 0
+ 40.  013 042021  	sta new_word
+ 41.              
+ 42.  014 502060  	ldc input
+ 43.              	; Implement Upper(ch) ;
+ 44.  015 140020  	sba# 'a'-'A'
+ 45.              
+ 46.  016 40201D  	jmp end_loop
+ 47.              
+ 48.              not_new_word:
+ 49.  017 502060  	ldc input
+ 50.              	;Implement Lower(ch) ;
+ 51.  018 100020  	ada# 'a'-'A'
+ 52.              
+ 53.  019 40201D  	jmp end_loop
+ 54.              
+ 55.  01A 000001  not_alpha:	lda# 1
+ 56.  01B 042021  	sta new_word	;new_word = 1
+ 57.  01C 502060  	ldc input
+ 58.              
+ 59.  01D 512063  end_loop:	stc output
+ 60.  01E 110001  	adx# 1
+ 61.  01F 402003  	jmp loop
+ 62.              
+ 63.  020 FFFFFF  done:	hlt
+ 64.              
+ 65.  021 000001  new_word: .word 1
+ 66.              
+ 67.              	.equ @,$060
+ 68.  060 722074  input:	.char 'r tY!d'
+      061 592164
+ 69.  062 000005  length:	.word 5
+ 70.  063 000000  output:	.blkw 5,0
+ 71.              
+
+                     SYMBOL TABLE CONTENTS
+
+000020 = DONE            00001D = END_LOOP        000060 = INPUT           
+000006 = IS_LOWER        00000F = IS_NEW_WORD     00000B = IS_UPPER        
+000062 = LENGTH          000003 = LOOP            000021 = NEW_WORD        
+00001A = NOT_ALPHA       000017 = NOT_NEW_WORD    000063 = OUTPUT          

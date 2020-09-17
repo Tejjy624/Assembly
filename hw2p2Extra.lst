@@ -1,0 +1,55 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ	@, $000
+  2.              	.equ	array, $101
+  3.  000 002100  	lda	$100
+  4.  001 042028  	sta	len
+  5.  002 002029  	lda	i
+  6.  003 202028  loop:	cma	len
+  7.  004 4B2025  	jge	end
+  8.  005 002029  	lda	i
+  9.  006 042026  	sta	min
+ 10.  007 100001  	ada#	1
+ 11.  008 04202A  	sta	j
+ 12.  009 202028  loop2:	cma	len
+ 13.  00A 4B2015  	jge	swap
+ 14.  00B 01202A  	ldx	j
+ 15.  00C 004101  	lda+	array
+ 16.  00D 04202B  	sta	min_val
+ 17.  00E 012026  	ldx	min
+ 18.  00F 004101  	lda+	array
+ 19.  010 20202B  	cma	min_val
+ 20.  011 4D2022  	jgt	if
+ 21.  012 1B202A  	inc	j
+ 22.  013 00202A  	lda	j
+ 23.  014 402009  	jmp	loop2
+ 24.  015 012029  swap:	ldx	i
+ 25.  016 004101  	lda+	array
+ 26.  017 042027  	sta	temp
+ 27.  018 012026  	ldx	min
+ 28.  019 004101  	lda+	array
+ 29.  01A 012029  	ldx	i
+ 30.  01B 044101  	sta+	array
+ 31.  01C 002027  	lda	temp
+ 32.  01D 012026  	ldx	min
+ 33.  01E 044101  	sta+	array
+ 34.  01F 1B2029  	inc	i
+ 35.  020 002029  	lda	i
+ 36.  021 402003  	jmp	loop
+ 37.  022 00202A  if:	lda	j
+ 38.  023 042026  	sta	min
+ 39.  024 402009  	jmp	loop2
+ 40.  025 FFFFFF  end:	hlt
+ 41.              
+ 42.  026 000000  min:	.word 0
+ 43.  027 000000  temp:	.word 0
+ 44.  028 000000  len:	.word 0
+ 45.  029 000000  i:	.word 0
+ 46.  02A 000000  j:	.word 0
+ 47.  02B 000000  min_val:	.word 0
+
+                     SYMBOL TABLE CONTENTS
+
+000101 = ARRAY           000025 = END             000029 = I               
+000022 = IF              00002A = J               000028 = LEN             
+000003 = LOOP            000009 = LOOP2           000026 = MIN             
+00002B = MIN_VAL         000015 = SWAP            000027 = TEMP            

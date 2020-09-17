@@ -1,0 +1,25 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ stack, $050
+  2.  000 020050  	lds# stack
+  3.  001 00000E  	lda# array1
+  4.  002 04200C  	sta  a1
+  5.  003 00000F  	lda# array2
+  6.  004 04200D  	sta  a2
+  7.  005 08000E  	psh# array1
+  8.  006 08200C  	psh  a1
+  9.  007 08000C  	psh# a1
+ 10.  008 08000F  	psh# array2
+ 11.  009 08200D  	psh  a2
+ 12.  00A 08000D  	psh# a2
+ 13.              	
+ 14.  00B FFFFFF  	hlt
+ 15.              
+ 16.  00C 000000  a1:	.word 0
+ 17.  00D 000000  a2:	.word 0
+ 18.  00E 000005  array1:	.word 5
+ 19.  00F 00000A  array2:	.word 10
+
+                     SYMBOL TABLE CONTENTS
+
+00000C = A1              00000D = A2              00000E = ARRAY1          
+00000F = ARRAY2          000050 = STACK           

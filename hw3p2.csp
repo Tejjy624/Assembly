@@ -1,0 +1,66 @@
+	.equ @, $000
+	.equ stack, $100
+	lds#	stack	;calling program
+	ldf#	0
+	psh#	matrix
+	psh#	3
+	psh#	4
+	psh#	$070	;location of new matrix. Can be changed
+	jsr	function	;calls subroutine
+	ads#	4
+	hlt
+	.equ @, $040	;example 3 by 2 matrix
+matrix:	.word 0
+	.word 1
+	.word 2
+	.word 3
+	.word 4
+	.word 5	
+	.word 6
+	.word 7
+	.word 8
+	.word 9
+	.word 10
+	.word 11
+
+	.equ	@,$020	;transpose subroutine
+	.equ t_matrix, 2
+	.equ	num_cols, 3
+	.equ	num_rows, 4
+	.equ ini_mat, 5
+function:	pshf
+	tsf
+	lda	r
+
+row:	cma !num_rows	;loop for rows
+	jeq	row_end
+	mul !num_cols
+	sta	matrix_pos
+	clr	c
+	lda	c
+
+col:	cma !num_cols	;loop for columns
+	jeq	col_end
+	mul !num_rows
+	sta	t_matrix_pos
+	ldx	c
+	adx	matrix_pos
+	lda& !ini_mat
+	ldx	r
+	adx	t_matrix_pos
+	sta& !t_matrix
+	inc	c
+	lda	c
+	jmp	col
+
+col_end:	inc	r	
+	lda	r
+	jmp	row
+
+row_end:	popf
+	rtn
+
+r:	.word 0	;temporary variables for subroutine
+c:	.word 0
+matrix_pos:	.word 0
+t_matrix_pos: .word 0

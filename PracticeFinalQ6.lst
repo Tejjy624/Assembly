@@ -1,0 +1,45 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @,$000
+  2.              	.equ stackstart,$100
+  3.  000 020100  	lds# stackstart
+  4.  001 030000  	ldf# 0
+  5.  002 080008  	psh# array
+  6.  003 08000D  	psh# array_size
+  7.  004 08000E  	psh# result
+  8.  005 41200F  	jsr  sum_array
+  9.  006 120003  	ads# 3
+ 10.  007 FFFFFF  	hlt
+ 11.  008 00000A  array:	.word 10
+ 12.  009 000014  	.word 20
+ 13.  00A 00001E  	.word 30
+ 14.  00B 000028  	.word 40
+ 15.  00C 000032  	.word 50
+ 16.  00D 000005  array_size: .word 5
+ 17.  00E 000000  result:	.word 0
+ 18.              
+ 19.              	.equ addr,4
+ 20.              	.equ size,3
+ 21.              	.equ total,2
+ 22.  00F FFF012  sum_array:	pshf
+ 23.  010 FFF008  	tsf
+ 24.  011 FFF010  	psha
+ 25.  012 FFF011  	pshx
+ 26.  013 000000  	lda# 0
+ 27.  014 010000  	ldx# 0
+ 28.  015 217003  loop:	cmx* !size
+ 29.  016 4B201A  	jge  end
+ 30.  017 109004  	ada& !addr
+ 31.  018 110001  	adx# 1
+ 32.  019 402015  	jmp  loop
+ 33.  01A 047002  end:	sta*  !total
+ 34.  01B FFF014  	popx
+ 35.  01C FFF013  	popa
+ 36.  01D FFF015  	popf
+ 37.  01E FFF040  	rtn
+
+                     SYMBOL TABLE CONTENTS
+
+000004 = ADDR            000008 = ARRAY           00000D = ARRAY_SIZE      
+00001A = END             000015 = LOOP            00000E = RESULT          
+000003 = SIZE            000100 = STACKSTART      00000F = SUM_ARRAY       
+000002 = TOTAL           

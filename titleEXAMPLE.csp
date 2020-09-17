@@ -1,0 +1,70 @@
+;new_word = 1
+;L=8
+;for i in range(L):
+;	ch = input_string(i)
+;	if ch >= 'a' and ch <= 'z' or ch>= 'A' and ch <= 'Z':
+;		if new_word ==1:
+;			new_word = 0
+;			ch=Upper(ch)
+;		else:
+;			ch=Lower(ch)
+;	else:
+;		new_word = 1
+
+	lda# 1
+	sta new_word
+
+	ldx# 0
+
+loop:	cmx length
+	jge done
+	ldc input
+
+is_lower:	cma# 'a'
+	jlt is_upper
+	cma# 'z'
+	jgt is_upper
+	jmp is_new_word
+
+is_upper:	cma# 'A'
+	jlt not_alpha
+	cma# 'Z'
+	jgt not_alpha
+
+is_new_word:
+	lda new_word
+	cma# 1
+	jne not_new_word
+
+	lda# 0	;new_word = 0
+	sta new_word
+
+	ldc input
+	; Implement Upper(ch) ;
+	sba# 'a'-'A'
+
+	jmp end_loop
+
+not_new_word:
+	ldc input
+	;Implement Lower(ch) ;
+	ada# 'a'-'A'
+
+	jmp end_loop
+
+not_alpha:	lda# 1
+	sta new_word	;new_word = 1
+	ldc input
+
+end_loop:	stc output
+	adx# 1
+	jmp loop
+
+done:	hlt
+
+new_word: .word 1
+
+	.equ @,$060
+input:	.char 'r tY!d'
+length:	.word 5
+output:	.blkw 5,0

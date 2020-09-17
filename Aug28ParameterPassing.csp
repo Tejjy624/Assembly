@@ -1,0 +1,37 @@
+	.equ	@, $000
+	.equ stack, $040
+	lds#	stack
+	ldf# 0
+	psh	main_base
+	psh	main_exp
+	jsr	power	;jump to jsr pushes pc into stack
+	ads#	2	;pops 2 things off the stack
+	sta	answer
+	hlt
+
+main_base:	.word 3
+main_exp:	.word 4
+answer:	.word
+
+; power subroutine
+	.equ	@,$020
+	.equ base, 3	;offsets of the frame pointer
+	.equ exp, 2
+power:	pshf		;saves frame pointer in the stack
+	tsf
+	lda#	1
+	sta	temp
+
+loop:	lda !exp
+	cma#	0
+	jle	end
+	lda	temp
+	mul !base	;Take the offeset and add to the base
+	sta	temp
+	dec !exp
+	jmp	loop
+end:	lda	temp
+	popf		;gets rid of frame pointer in stack
+	rtn		;PC gets return address and control goes to call
+
+temp:	.word

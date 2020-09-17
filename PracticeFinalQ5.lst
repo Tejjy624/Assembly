@@ -1,0 +1,44 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @, $000
+  2.              	.equ stackstart, $030
+  3.              
+  4.              	.equ enable_ints, $80 ;turn leftmost bit into 1, so $80
+  5.              	.equ kbd_ctrl, $000
+  6.              	.equ kbd_data, $001
+  7.              
+  8.              	.equ crt_data, $317
+  9.              	.equ zero, $30
+ 10.              	.equ nine, $39
+ 11.              
+ 12.  000 020030  	lds# stackstart
+ 13.  001 000080  	lda# enable_ints
+ 14.  002 712000  	outb kbd_ctrl
+ 15.              
+ 16.  003 002006  loop:	lda  num_char
+ 17.  004 712317  	outb crt_data
+ 18.  005 402003  	jmp  loop
+ 19.              
+ 20.  006 000030  num_char:	.word zero
+ 21.              
+ 22.  007 FFF010  kbd_int:	psha
+ 23.  008 702001  	inb  kbd_data
+ 24.  009 002006  	lda  num_char
+ 25.  00A 200039  	cma# nine
+ 26.  00B 4B200E  	jge  reset
+ 27.  00C 1B2006  	inc  num_char
+ 28.  00D 402010  	jmp  return
+ 29.              
+ 30.  00E 000030  reset:	lda# zero
+ 31.  00F 042006  	sta  num_char
+ 32.  010 FFF013  return:	popa
+ 33.  011 FFF041  	irtn	;since its interrupt we use i
+ 34.              
+ 35.              	.equ @,$FF8 ;address of keyboard isr
+ 36.  FF8 000007  	.word kbd_int
+
+                     SYMBOL TABLE CONTENTS
+
+000317 = CRT_DATA        000080 = ENABLE_INTS     000000 = KBD_CTRL        
+000001 = KBD_DATA        000007 = KBD_INT         000003 = LOOP            
+000039 = NINE            000006 = NUM_CHAR        00000E = RESET           
+000010 = RETURN          000030 = STACKSTART      000030 = ZERO            

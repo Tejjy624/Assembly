@@ -1,0 +1,23 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @, $100
+  2.  100 002012  loop:	lda	counter
+  3.  101 202011  	cma	n
+  4.  102 4D2109  	jgt	end
+  5.  103 182013  	mul	multiplier
+  6.  104 102010  	ada	sum
+  7.  105 042010  	sta	sum
+  8.  106 1D2013  	neg	multiplier
+  9.  107 1B2012  	inc	counter
+ 10.  108 402100  	jmp	loop
+ 11.  109 FFFFFF  end:	hlt
+ 12.              
+ 13.              	.equ	@, $010
+ 14.  010 000000  sum:	.word 0
+ 15.  011 000004  n:	.word 4
+ 16.  012 000001  counter:	.word 1
+ 17.  013 000001  multiplier:	.word 1
+
+                     SYMBOL TABLE CONTENTS
+
+000012 = COUNTER         000109 = END             000100 = LOOP            
+000013 = MULTIPLIER      000011 = N               000010 = SUM             

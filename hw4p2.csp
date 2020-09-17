@@ -1,0 +1,69 @@
+	.equ @, $000
+	.equ stack, $100
+	lds# stack
+	ldf# 0
+	psh# in	;starting address of string
+	psh# length	;number of characters
+	psh# out	;starting address of converted string
+	jsr	title
+	ads#	3
+	hlt
+
+	.equ @, $060
+in:	.char 'lEArN pYtHOn iN 30 YeaRS!', length
+
+out:	.blkw length
+	.equ @, $020
+	.equ ini, 4
+	.equ len, 3
+	.equ new, 2
+title:	pshf
+	tsf
+	ldx# 0
+
+loop:	cmx !len
+	jge  done
+	ldc* !ini
+
+is_lower:	cma# 'a'
+	jlt  is_upper
+	cma# 'z'
+	jgt	is_upper
+	jmp	new_word
+
+is_upper:	cma# 'A'
+	jlt  not_alpha
+	cma# 'Z'
+	jgt  not_alpha
+
+new_word:	lda	word
+	cma#	1
+	jne  not_new
+	lda# 0
+	sta	word
+	ldc* !ini
+
+	cma# 'Z'
+	jle  end_loop
+	sba# 'a'-'A'
+	jmp  end_loop
+
+not_new:	ldc* !ini
+
+	cma# 'a'
+	jge  end_loop
+	ada# 'a'-'A'
+	jmp  end_loop
+
+not_alpha:	lda#	1
+	sta  word
+	ldc* !ini
+
+end_loop:	stc* !new
+	adx# 1
+	jmp loop
+
+done:	popf
+	rtn
+
+word:	.word 1

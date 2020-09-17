@@ -1,0 +1,52 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @,$000	; calling program
+  2.              	.equ stack, $060
+  3.              	.equ arraysize, 5
+  4.  000 020060  	lds# stack	;where stack begins
+  5.  001 030000  	ldf# 0	;frame pointer is 0
+  6.  002 080020  	psh# array	;push addr of array
+  7.  003 080005  	psh# arraysize	;push the size of the array
+  8.  004 08000A  	psh#	10	;push the target value to be found
+  9.  005 412040  	jsr	search	;call subroutine
+ 10.  006 120003  	ads# 3	;take actual parameters off stack
+ 11.  007 FFFFFF  	hlt
+ 12.              
+ 13.              	.equ	@, $020	; array goes here
+ 14.  020 00001E  array:	.word 30
+ 15.  021 00000F  	.word 15
+ 16.  022 000019  	.word 25
+ 17.  023 00000A  	.word 10
+ 18.  024 000014  	.word 20
+ 19.              
+ 20.              	.equ	@, $040	;subroutine
+ 21.              	.equ target, 2	;parameters passed onto subroutine
+ 22.              	.equ len, 3
+ 23.              	.equ numbas, 4
+ 24.  040 FFF012  search:	pshf		;prepares stack and XR values
+ 25.  041 FFF008  	tsf
+ 26.  042 010000  	ldx#	0
+ 27.              	
+ 28.  043 002053  loop:	lda	counter	;loops to find target value
+ 29.  044 203003  	cma !len
+ 30.  045 48204F  	jeq	not_found
+ 31.  046 009004  	lda& !numbas
+ 32.  047 203002  	cma !target
+ 33.  048 48204C  	jeq	found
+ 34.  049 1B2053  	inc	counter
+ 35.  04A 110001  	adx#	1
+ 36.  04B 402043  	jmp	loop
+ 37.  04C FFF003  found:	txa		;stores XR to acc if target value found
+ 38.  04D FFF015  	popf
+ 39.  04E FFF040  	rtn
+ 40.  04F 002052  not_found:	lda	negative_one	;loads hlt hex into acc if not found
+ 41.  050 FFF015  	popf
+ 42.  051 FFF040  	rtn	
+ 43.  052 FFFFFF  negative_one:	.word $FFFFFF
+ 44.  053 000001  counter:	.word 1	;subroutine variable
+
+                     SYMBOL TABLE CONTENTS
+
+000020 = ARRAY           000005 = ARRAYSIZE       000053 = COUNTER         
+00004C = FOUND           000003 = LEN             000043 = LOOP            
+000052 = NEGATIVE_ONE    00004F = NOT_FOUND       000004 = NUMBAS          
+000040 = SEARCH          000060 = STACK           000002 = TARGET          

@@ -1,0 +1,26 @@
+	.equ stackstart, $030
+	.equ enable_ints, $80 ;ASCII character
+	.equ kbd_ctrl, $000
+	.equ kbd_data, $001
+	.equ crt_data, $317
+	.equ ex_point, $21	;ASCII character
+
+	lds#	stackstart
+	lda# enable_ints ;enables interrupts from specific devices
+	outb	kbd_ctrl ;device is specified to be keyboard
+	
+	sie ;set interrupt flag. Now enable devices we need
+loop:	nop
+	nop
+	jmp loop
+
+	.equ @, $200
+kbd_int:	psha
+	inb	kbd_data ;get char from keyboard
+	lda#	ex_point ;loads exclamation point ! ($21 in Hex)
+	outb	crt_data
+	popa
+	irtn
+
+	.equ @, $FF8
+	.word kbd_int

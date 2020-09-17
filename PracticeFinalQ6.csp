@@ -1,0 +1,37 @@
+	.equ @,$000
+	.equ stackstart,$100
+	lds# stackstart
+	ldf# 0
+	psh# array
+	psh# array_size
+	psh# result
+	jsr  sum_array
+	ads# 3
+	hlt
+array:	.word 10
+	.word 20
+	.word 30
+	.word 40
+	.word 50
+array_size: .word 5
+result:	.word 0
+
+	.equ addr,4
+	.equ size,3
+	.equ total,2
+sum_array:	pshf
+	tsf
+	psha
+	pshx
+	lda# 0
+	ldx# 0
+loop:	cmx* !size
+	jge  end
+	ada& !addr
+	adx# 1
+	jmp  loop
+end:	sta*  !total
+	popx
+	popa
+	popf
+	rtn

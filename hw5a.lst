@@ -1,0 +1,191 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ @, $000
+  2.              	.equ stack, $100
+  3.  000 020100  	lds# stack
+  4.  001 030000  	ldf# 0
+  5.  002 080202  	psh# grid_in
+  6.  003 080200  	psh# num_rows
+  7.  004 080201  	psh#	num_cols
+  8.  005 080212  	psh# grid_out
+  9.  006 412400  	jsr	nextGen
+ 10.  007 120003  	ads#	3
+ 11.  008 FFFFFF  	hlt
+ 12.              
+ 13.              	.equ @, $200
+ 14.  200 000004  num_rows: 	.word 4
+ 15.  201 000004  num_cols:	.word 4
+ 16.  202 000000  grid_in:	.word 0
+ 17.  203 000000  	.word 0
+ 18.  204 000000  	.word 0
+ 19.  205 000000  	.word 0
+ 20.  206 000000  	.word 0
+ 21.  207 000001  	.word 1
+ 22.  208 000001  	.word 1
+ 23.  209 000000  	.word 0
+ 24.  20A 000000  	.word 0
+ 25.  20B 000001  	.word 1
+ 26.  20C 000001  	.word 1
+ 27.  20D 000000  	.word 0
+ 28.  20E 000000  	.word 0
+ 29.  20F 000000  	.word 0
+ 30.  210 000000  	.word 0
+ 31.  211 000000  	.word 0
+ 32.  212 000002  grid_out:	.blkw 16,2
+ 33.              
+ 34.              	.equ @, $400
+ 35.              	.equ in, 6
+ 36.              	.equ row,5
+ 37.              	.equ col,4
+ 38.              	.equ out,3
+ 39.  400 FFF012  nextGen:	pshf
+ 40.  401 FFF010  	psha
+ 41.  402 FFF008  	tsf
+ 42.  403 007004  	lda* !col
+ 43.  404 102477  	ada  num_c
+ 44.  405 042477  	sta  num_c
+ 45.  406 007005  	lda* !row
+ 46.  407 102476  	ada  num_r
+ 47.  408 042476  	sta  num_r
+ 48.  409 010000  	ldx# 0
+ 49.  40A 0A2474  	clr  r
+ 50.  40B 0A2475  	clr  c
+ 51.  40C 0A2479  	clr  alive_counter
+ 52.              
+ 53.  40D 0A2475  new_row:	clr  c
+ 54.  40E 002474  new_col:	lda  r	;find pos and store it
+ 55.  40F 187004  	mul* !col
+ 56.  410 102475  	ada  c
+ 57.  411 042478  	sta  pos
+ 58.  412 0A2479  	clr  alive_counter
+ 59.              
+ 60.  413 002474  up:	lda	r
+ 61.  414 200000  	cma# 0
+ 62.  415 48242D  	jeq  midleft
+ 63.  416 012478  	ldx  pos
+ 64.  417 157004  	sbx* !col
+ 65.  418 009006  	lda& !in
+ 66.  419 102479  	ada  alive_counter
+ 67.  41A 042479  	sta  alive_counter
+ 68.              
+ 69.  41B 002475  upleft:	lda  c
+ 70.  41C 200000  	cma# 0
+ 71.  41D 482424  	jeq  upright
+ 72.  41E 012478  	ldx  pos
+ 73.  41F 157004  	sbx* !col
+ 74.  420 150001  	sbx# 1
+ 75.  421 009006  	lda& !in
+ 76.  422 102479  	ada  alive_counter
+ 77.  423 042479  	sta  alive_counter
+ 78.              
+ 79.  424 002475  upright:	lda  c
+ 80.  425 202477  	cma  num_c
+ 81.  426 48242D  	jeq  midleft
+ 82.  427 012478  	ldx  pos
+ 83.  428 157004  	sbx* !col
+ 84.  429 110001  	adx# 1
+ 85.  42A 009006  	lda& !in
+ 86.  42B 102479  	ada  alive_counter
+ 87.  42C 042479  	sta  alive_counter
+ 88.              
+ 89.  42D 002475  midleft:	lda  c
+ 90.  42E 200000  	cma# 0
+ 91.  42F 482435  	jeq  midright
+ 92.  430 012478  	ldx  pos
+ 93.  431 150001  	sbx# 1
+ 94.  432 009006  	lda& !in
+ 95.  433 102479  	ada  alive_counter
+ 96.  434 042479  	sta  alive_counter
+ 97.              
+ 98.  435 002475  midright:	lda	c
+ 99.  436 202477  	cma  num_c
+100.  437 48243D  	jeq  bot
+101.  438 012478  	ldx  pos
+102.  439 110001  	adx# 1
+103.  43A 009006  	lda& !in
+104.  43B 102479  	ada  alive_counter
+105.  43C 042479  	sta  alive_counter
+106.              
+107.  43D 002474  bot:	lda  r
+108.  43E 202476  	cma  num_r
+109.  43F 482457  	jeq  decision
+110.  440 012478  	ldx  pos
+111.  441 117004  	adx* !col
+112.  442 009006  	lda& !in
+113.  443 102479  	ada  alive_counter
+114.  444 042479  	sta  alive_counter
+115.              
+116.  445 002475  botleft:	lda  c
+117.  446 200000  	cma# 0
+118.  447 48244E  	jeq  botright
+119.  448 012478  	ldx  pos
+120.  449 117004  	adx* !col
+121.  44A 150001  	sbx# 1
+122.  44B 009006  	lda& !in
+123.  44C 102479  	ada  alive_counter
+124.  44D 042479  	sta  alive_counter
+125.              
+126.  44E 002475  botright:	lda  c
+127.  44F 202477  	cma  num_c
+128.  450 482457  	jeq  decision
+129.  451 012478  	ldx  pos
+130.  452 117004  	adx* !col
+131.  453 110001  	adx# 1
+132.  454 009006  	lda& !in
+133.  455 102479  	ada  alive_counter
+134.  456 042479  	sta  alive_counter
+135.              
+136.  457 002479  decision:	lda  alive_counter
+137.  458 200001  	cma# 1
+138.  459 4C2462  	jle  dead
+139.  45A 200004  	cma# 4
+140.  45B 4B2462  	jge  dead
+141.  45C 200003  	cma# 3
+142.  45D 482466  	jeq  alive
+143.  45E 012478  	ldx  pos
+144.  45F 009006  	lda& !in
+145.  460 200001  	cma# 1
+146.  461 482466  	jeq  alive
+147.              
+148.  462 012478  dead:	ldx  pos
+149.  463 000000  	lda# 0
+150.  464 049003  	sta& !out
+151.  465 402469  	jmp  reset
+152.              
+153.  466 012478  alive:	ldx  pos
+154.  467 000001  	lda# 1
+155.  468 049003  	sta& !out
+156.              
+157.  469 1B2475  reset:	inc  c
+158.  46A 002475  	lda  c
+159.  46B 207004  	cma* !col
+160.  46C 4A240E  	jlt  new_col
+161.  46D 1B2474  	inc  r
+162.  46E 002474  	lda  r
+163.  46F 207005  	cma* !row
+164.  470 4A240D  	jlt  new_row
+165.              
+166.  471 FFF013  end:	popa
+167.  472 FFF015  	popf
+168.  473 FFF040  	rtn
+169.              
+170.              
+171.  474 000000  r:	.word 0 ;row index
+172.  475 000000  c:	.word 0 ;col index
+173.  476 FFFFFF  num_r:	.word -1 ;max row
+174.  477 FFFFFF  num_c:	.word -1 ;max col
+175.  478 000000  pos:	.word 0 ;position in array
+176.  479 000000  alive_counter:	.word 0 ;number of alive neighbors
+
+                     SYMBOL TABLE CONTENTS
+
+000466 = ALIVE           000479 = ALIVE_COUNTER   00043D = BOT             
+000445 = BOTLEFT         00044E = BOTRIGHT        000475 = C               
+000004 = COL             000462 = DEAD            000457 = DECISION        
+000471 = END             000202 = GRID_IN         000212 = GRID_OUT        
+000006 = IN              00042D = MIDLEFT         000435 = MIDRIGHT        
+00040E = NEW_COL         00040D = NEW_ROW         000400 = NEXTGEN         
+000477 = NUM_C           000201 = NUM_COLS        000476 = NUM_R           
+000200 = NUM_ROWS        000003 = OUT             000478 = POS             
+000474 = R               000469 = RESET           000005 = ROW             
+000100 = STACK           000413 = UP              00041B = UPLEFT          
+000424 = UPRIGHT         

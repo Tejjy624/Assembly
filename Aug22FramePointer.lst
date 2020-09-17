@@ -1,0 +1,23 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ	@, $000
+  2.              	.equ	stackstart, $020
+  3.              	.equ	thirdval, 0
+  4.              	.equ secondval, 1
+  5.              	.equ firstval, 2
+  6.              
+  7.  000 020020  	lds#	stackstart
+  8.  001 080064  	psh#	100
+  9.  002 0800C8  	psh#	200
+ 10.  003 08012C  	psh#	300
+ 11.  004 FFF008  	tsf
+ 12.              
+ 13.  005 003000  	lda ! thirdval
+ 14.  006 003001  	lda ! secondval
+ 15.  007 003002  	lda ! firstval
+ 16.              
+ 17.  008 FFFFFF  	hlt
+
+                     SYMBOL TABLE CONTENTS
+
+000002 = FIRSTVAL        000001 = SECONDVAL       000020 = STACKSTART      
+000000 = THIRDVAL        
