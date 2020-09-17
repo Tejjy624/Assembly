@@ -1,0 +1,47 @@
+lda $100
+;0000 0000 0010 0001 0000 0000
+
+;0000 0000 0010 0001 0000 0000
+;acc = $AB
+
+;0000 0001 0010 0001 0000 0000
+;acc = $CD
+
+;0000 0010 0010 0001 0000 0000
+;acc = $EF
+
+.equ @, $100
+.word $ABCDEF ; AB CD EF if we add AA at the end, its still 2 bit. 
+
+;00 01 10
+
+;CUSP problem 6
+lda# $018	;000 ;load $018 into acc
+sta $007	;001 ;store $018 in $007
+inc $007	;002
+cma $008	;003
+jlt $006	;004
+inc $007	;005
+hlt		;006
+.word $040550	;007 $19 or $1A
+.word $000012	;008
+
+;CUSP problem 7
+lda dividend
+
+loop:
+sta remainder
+sba divisor
+cma# 0
+jlt end
+inc quotient
+jmp loop
+
+end:
+hlt
+
+.equ @, $100
+dividend:	.word 0
+divisor:	.word 0
+quotient:	.word 0
+remainder:	.word 0

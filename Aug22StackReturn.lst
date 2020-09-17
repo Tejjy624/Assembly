@@ -1,0 +1,29 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ	@, $000
+  2.              	.equ	stack_start, $015
+  3.  000 020015  	lds#	stack_start
+  4.              
+  5.  001 000003  	lda#	3
+  6.  002 042024  	sta	num
+  7.  003 412020  	jsr	square
+  8.  004 002025  	lda	result
+  9.              
+ 10.  005 000004  	lda#	4
+ 11.  006 042024  	sta	num
+ 12.  007 412020  	jsr	square
+ 13.  008 002025  	lda	result
+ 14.              
+ 15.  009 FFFFFF  	hlt
+ 16.              
+ 17.              	.equ	@, $020
+ 18.  020 002024  square:	lda	num
+ 19.  021 182024  	mul	num
+ 20.  022 042025  	sta	result
+ 21.  023 FFF040  	rtn
+ 22.  024 000000  num:	.word
+ 23.  025 000000  result:	.word
+
+                     SYMBOL TABLE CONTENTS
+
+000024 = NUM             000025 = RESULT          000020 = SQUARE          
+000015 = STACK_START     

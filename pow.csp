@@ -1,0 +1,22 @@
+; pow(m,n) = m^n
+; m is stored in $20
+; n is stored in $21
+; result is stored in $22
+	.equ m, $20
+	.equ n, $21
+	.equ result, $22
+	lda# 1	;initialize result to 1 (this line loads 1 into the acc)
+	sta result	;stores into result
+	lda counter
+loop:	cma n
+	jgt end
+	lda m	;load m into acc
+	mul result	; m multiplied by result
+	sta result
+	lda counter
+	ada# $001
+	sta counter
+	jmp loop
+end:	hlt
+
+counter:	.word $001

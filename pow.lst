@@ -1,0 +1,28 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              ; pow(m,n) = m^n
+  2.              ; m is stored in $20
+  3.              ; n is stored in $21
+  4.              ; result is stored in $22
+  5.              	.equ m, $20
+  6.              	.equ n, $21
+  7.              	.equ result, $22
+  8.  000 000001  	lda# 1	;initialize result to 1 (this line loads 1 into the acc)
+  9.  001 042022  	sta result	;stores into result
+ 10.  002 00200D  	lda counter
+ 11.  003 202021  loop:	cma n
+ 12.  004 4D200C  	jgt end
+ 13.  005 002020  	lda m	;load m into acc
+ 14.  006 182022  	mul result	; m multiplied by result
+ 15.  007 042022  	sta result
+ 16.  008 00200D  	lda counter
+ 17.  009 100001  	ada# $001
+ 18.  00A 04200D  	sta counter
+ 19.  00B 402003  	jmp loop
+ 20.  00C FFFFFF  end:	hlt
+ 21.              
+ 22.  00D 000001  counter:	.word $001
+
+                     SYMBOL TABLE CONTENTS
+
+00000D = COUNTER         00000C = END             000003 = LOOP            
+000020 = M               000021 = N               000022 = RESULT          

@@ -1,0 +1,35 @@
+	.equ	@, $000
+	.equ	array, 6
+	ldx#	0
+	lda	x
+
+loop:	cmx	max	;loop to end when array = 6 elements
+	jgt	end
+	jmp	loop2
+
+loop2:	lda+	x	;loop to compare elements of X and Y
+	cma+	y
+	jle	end2
+	adx#	1
+	jmp	loop
+
+end2:	lda#	0
+	hlt
+end:	lda#	1	;ends loop and loads 1 into acc for X>Y
+	hlt
+
+max:	.word array - 1	;max array size = 0-5 so 6 elements
+
+x:	.word 95	;array X
+	.word 1002
+	.word 233
+	.word -137
+	.word 6332
+	.word -33191
+
+y:	.word 95	;array Y
+	.word 102
+	.word 109
+	.word -1378
+	.word 6332
+	.word -33194

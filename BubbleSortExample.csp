@@ -1,0 +1,40 @@
+;bubble sort
+	lda p
+for_p:	cma# 0
+	jeq end_p
+	clr i
+	lda i
+
+for_i:	cma p
+	jge end_i
+	ldx i
+	lda+ array  ;+ is for index addressing; array[i]
+	cma+ array + 1 ;array[i+1]
+	jle end_swap
+
+swap:	sta temp
+	lda+ array+1
+	sta+ array
+	lda temp
+	sta+ array+1
+
+end_swap:	inc i
+	lda i
+	jmp for_i
+
+end_i:	dec p
+	lda p
+	jmp for_p
+
+end_p:	hlt
+
+p:	.word 5
+i:	.word 0
+temp:	.word 9
+
+array:	.word 100
+	.word 74
+	.word -144
+	.word 10022
+	.word 657
+	.word -33

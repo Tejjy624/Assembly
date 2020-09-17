@@ -1,0 +1,16 @@
+	.equ @,$001
+	.equ max_int, 5
+	lda counter
+loop:	cma n
+	jgt end
+	mul counter
+	ada sum
+	sta sum
+	lda counter
+	ada# 1
+	sta counter
+	jmp loop
+end:	hlt
+counter:	.word $001
+sum:	.word $000
+n:	.word max_int

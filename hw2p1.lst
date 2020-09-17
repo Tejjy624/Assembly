@@ -1,0 +1,42 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ	@, $000
+  2.              	.equ	array, 6
+  3.  000 010000  	ldx#	0
+  4.  001 00200F  	lda	x
+  5.              
+  6.  002 21200E  loop:	cmx	max	;loop for checking array size
+  7.  003 4D200C  	jgt	end
+  8.  004 402005  	jmp	loop2
+  9.              
+ 10.  005 00400F  loop2:	lda+	x
+ 11.  006 204015  	cma+	y
+ 12.  007 4C200A  	jle	end2
+ 13.  008 110001  	adx#	1
+ 14.  009 402002  	jmp	loop
+ 15.              
+ 16.  00A 000000  end2:	lda#	0
+ 17.  00B FFFFFF  	hlt
+ 18.  00C 000001  end:	lda#	1	;ends loop and loads 1 into acc for X>Y
+ 19.  00D FFFFFF  	hlt
+ 20.              
+ 21.  00E 000005  max:	.word array - 1
+ 22.              
+ 23.  00F 00005F  x:	.word 95
+ 24.  010 0003EA  	.word 1002
+ 25.  011 0000E9  	.word 233
+ 26.  012 FFFF77  	.word -137
+ 27.  013 0018BC  	.word 6332
+ 28.  014 FF7E59  	.word -33191
+ 29.              
+ 30.  015 00005F  y:	.word 95
+ 31.  016 000066  	.word 102
+ 32.  017 00006D  	.word 109
+ 33.  018 FFFA9E  	.word -1378
+ 34.  019 0018BC  	.word 6332
+ 35.  01A FF7E56  	.word -33194
+
+                     SYMBOL TABLE CONTENTS
+
+000006 = ARRAY           00000C = END             00000A = END2            
+000002 = LOOP            000005 = LOOP2           00000E = MAX             
+00000F = X               000015 = Y               

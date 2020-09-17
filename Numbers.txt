@@ -1,0 +1,26 @@
+Tejvir Sohi
+UCID: 914165808
+
+1-2:
+	B.) Octal: 267105	Hexadecimal: 16E44
+
+1-4:
+	B.) Binary: 1010011101111100
+	E.) Binary: 1110000000110100
+	H.) Binary: 001111101001011
+	J.) Binary: 110011001001111
+1-5:
+	C.) Octal: 2762462	Hexadecimal: BE532
+	D.) Octal: 275542	Hexadecimal: 17B62
+	F.) Octal: 47553	Hexadecimal: 4F6B
+1-6:
+	B.) Binary: 0000001111110100	Hexadecimal: 03F4
+	D.) Binary: 1100000110000000	Hexadecimal: C180
+	E.) Binary: 1111111111111111	Hexadecimal: FFFF
+1-7:
+	A.) Decimal: -1
+	C.) Decimal: -8191
+	D.) Decimal: 15941
+1-11:
+	A.II) Decimal: -7.8776
+	B.I.) Hexadecimal: $869600

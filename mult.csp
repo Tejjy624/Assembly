@@ -1,0 +1,14 @@
+	.equ n, $100
+	.equ m, $101
+	.equ result, $102
+	lda	m
+loop:	cma#	0
+	jeq	end
+	lda	result
+	ada	n
+	sta	result
+	lda	m
+	sba#	1
+	sta	m
+	jmp	loop
+end:	hlt

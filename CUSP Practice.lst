@@ -1,0 +1,21 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              ;sum of squares 1^2 + 2^2 + 3^2 + 4^2 + 5^2 = 55
+  2.  000 00200B  	lda counter	;load value of "counter',1, in acc
+  3.  001 20200D  Loop:	cma n	;compare acc with value at "n"
+  4.  002 4D200A  	jgt end	;if acc val is greater than "n", jump and stop program
+  5.  003 18200B  	mul counter	;multiply acc by "counter", store result in acc
+  6.  004 10200C  	ada sum	;add acc and "sum",store result in acc
+  7.  005 04200C  	sta sum	;copy acc value to "sum"
+  8.  006 00200B  	lda counter	;load value of counter in acc again
+  9.  007 100001  	ada# $001	;add 1 to the current value in the acc, store result in acc
+ 10.  008 04200B  	sta counter	;copy acc value to counter
+ 11.  009 402001  	jmp loop	;jump back to the beginning of the loop
+ 12.  00A FFFFFF  End:	hlt
+ 13.  00B 000001  counter:	.word $001
+ 14.  00C 000000  sum:	.word $000
+ 15.  00D 000005  n:	.word $005
+
+                     SYMBOL TABLE CONTENTS
+
+00000B = COUNTER         00000A = END             000001 = LOOP            
+00000D = N               00000C = SUM             

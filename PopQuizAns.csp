@@ -1,0 +1,12 @@
+	lda n
+loop:	cma# 0
+	jle end
+	mul result
+	sta result
+	lda n
+	sba# $001
+	sta n
+	jmp loop
+end:	hlt
+n:	.word $005
+result:	.word $001

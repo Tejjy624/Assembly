@@ -1,0 +1,15 @@
+;sum of squares 1^2 + 2^2 + 3^2 + 4^2 + 5^2 = 55
+	lda counter	;load value of "counter',1, in acc
+loop:	cma n	;compare acc with value at "n"
+	jgt end	;if acc val is greater than "n", jump and stop program
+	mul counter	;multiply acc by "counter", store result in acc
+	ada sum	;add acc and "sum",store result in acc
+	sta sum	;copy acc value to "sum"
+	lda counter	;load value of counter in acc again
+	ada# $001	;add 1 to the current value in the acc, store result in acc
+	sta counter	;copy acc value to counter
+	jmp loop	;jump back to the beginning of the loop
+End:	hlt
+counter:	.word $001
+sum:	.word $000
+n:	.word $005

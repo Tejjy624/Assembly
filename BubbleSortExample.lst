@@ -1,0 +1,48 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              ;bubble sort
+  2.  000 002017  	lda p
+  3.  001 200000  for_p:	cma# 0
+  4.  002 482016  	jeq end_p
+  5.  003 0A2018  	clr i
+  6.  004 002018  	lda i
+  7.              
+  8.  005 202017  for_i:	cma p
+  9.  006 4B2013  	jge end_i
+ 10.  007 012018  	ldx i
+ 11.  008 00401A  	lda+ array  ;+ is for index addressing; array[i]
+ 12.  009 20401B  	cma+ array + 1 ;array[i+1]
+ 13.  00A 4C2010  	jle end_swap
+ 14.              
+ 15.  00B 042019  swap:	sta temp
+ 16.  00C 00401B  	lda+ array+1
+ 17.  00D 04401A  	sta+ array
+ 18.  00E 002019  	lda temp
+ 19.  00F 04401B  	sta+ array+1
+ 20.              
+ 21.  010 1B2018  end_swap:	inc i
+ 22.  011 002018  	lda i
+ 23.  012 402005  	jmp for_i
+ 24.              
+ 25.  013 1C2017  end_i:	dec p
+ 26.  014 002017  	lda p
+ 27.  015 402001  	jmp for_p
+ 28.              
+ 29.  016 FFFFFF  end_p:	hlt
+ 30.              
+ 31.  017 000005  p:	.word 5
+ 32.  018 000000  i:	.word 0
+ 33.  019 000009  temp:	.word 9
+ 34.              
+ 35.  01A 000064  array:	.word 100
+ 36.  01B 00004A  	.word 74
+ 37.  01C FFFF70  	.word -144
+ 38.  01D 002726  	.word 10022
+ 39.  01E 000291  	.word 657
+ 40.  01F FFFFDF  	.word -33
+
+                     SYMBOL TABLE CONTENTS
+
+00001A = ARRAY           000013 = END_I           000016 = END_P           
+000010 = END_SWAP        000005 = FOR_I           000001 = FOR_P           
+000018 = I               000017 = P               00000B = SWAP            
+000019 = TEMP            

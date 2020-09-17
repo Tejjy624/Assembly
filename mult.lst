@@ -1,0 +1,20 @@
+LINE ADDR CONTENTS SOURCE LINE
+  1.              	.equ n, $100
+  2.              	.equ m, $101
+  3.              	.equ result, $102
+  4.  000 002101  	lda	m
+  5.  001 200000  loop:	cma#	0
+  6.  002 48200A  	jeq	end
+  7.  003 002102  	lda	result
+  8.  004 102100  	ada	n
+  9.  005 042102  	sta	result
+ 10.  006 002101  	lda	m
+ 11.  007 140001  	sba#	1
+ 12.  008 042101  	sta	m
+ 13.  009 402001  	jmp	loop
+ 14.  00A FFFFFF  end:	hlt
+
+                     SYMBOL TABLE CONTENTS
+
+00000A = END             000001 = LOOP            000101 = M               
+000100 = N               000102 = RESULT          

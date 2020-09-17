@@ -1,0 +1,36 @@
+	.equ	row_len, 3
+	.equ col_len, 4
+	.equ	max_row, row_len - 1
+	.equ max_col, col_len - 1
+
+rloop:	lda	curr_row
+	cma#	max_row
+	jgt	rloop_end
+
+cloop:	lda	curr_col
+	cma#	max_col
+	jgt	cloop_end
+
+	lda	curr_row
+	mul#	row_len
+	ada	curr_col
+
+	;compute value
+	lda	curr_row
+	mul	curr_col
+	;store value in table
+	sta+	table
+	;increment current column
+	inc	curr_col
+	;back to the top of cloop
+	jmp	cloop
+
+cloop_end:	clr	curr_col
+	inc	curr_row
+	jmp	rloop
+
+rloop_end:	hlt
+
+curr_row:	.word 0
+curr_col:	.word 0
+table:	.blkw row_len * col_len, -1

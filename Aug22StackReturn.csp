@@ -1,0 +1,23 @@
+	.equ	@, $000
+	.equ	stack_start, $015
+	lds#	stack_start
+
+	lda#	3
+	sta	num
+	jsr	square
+	lda	result
+
+	lda#	4
+	sta	num
+	jsr	square
+	lda	result
+
+	hlt
+
+	.equ	@, $020
+square:	lda	num
+	mul	num
+	sta	result
+	rtn
+num:	.word
+result:	.word

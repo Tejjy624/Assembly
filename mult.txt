@@ -1,0 +1,7 @@
+#start at memory $100
+n = 3
+m = 6
+result = 0
+while m > 0:
+	result=result+n
+	m=m-1
